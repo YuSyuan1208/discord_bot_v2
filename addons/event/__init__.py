@@ -1,5 +1,5 @@
-from addons.event.models.event import event
+from addons.event.models import event
 
 
 def setup(bot):
-    bot.add_cog(event(bot))
+    bot.add_cog(event.event(bot))

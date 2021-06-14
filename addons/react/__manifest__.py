@@ -1,6 +1,6 @@
 {
-    'name':'react',
-    'depends':[],
+    'name': 'react',
+    'depends': [],
     'installable': True,
-    'auto_install': False,
+    'auto_install': True,
 }

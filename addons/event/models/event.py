@@ -26,23 +26,23 @@ class event(model.Cog_Extension):
         await super().on_ready()
         # _logger.debug('event on_ready')
 
-    @commands.Cog.listener()
-    async def on_message(self, msg):
-        channel_id = msg.channel.id
-        author_id = msg.author.id
-        content = msg.content
-        msg_id = msg.id
-        attachments = msg.attachments
-        # print('ch_id:', channel_id, 'msg_id:', msg_id, 'aut_id:', author_id, 'con:', content, 'attach:', attachments)
-        if attachments and msg.author != self.bot.user:
-            file = attachments[0]
-            file.filename = f"test_{file.filename}"
-            spoiler = await file.to_file()
-            await msg.channel.send(file=spoiler)
-        """ if(msg.content == "check_channel_id"):
-            print(f'Dc_msg: {msg.channel.id}')
-        if msg.content == '<:MeMe:616147400792342538>' and msg.author != self.bot.user:
-            await msg.channel.send('<:MeMe:616147400792342538>') """
+    # @commands.Cog.listener()
+    # async def on_message(self, msg):
+    #     channel_id = msg.channel.id
+    #     author_id = msg.author.id
+    #     content = msg.content
+    #     msg_id = msg.id
+    #     attachments = msg.attachments
+    #     # print('ch_id:', channel_id, 'msg_id:', msg_id, 'aut_id:', author_id, 'con:', content, 'attach:', attachments)
+    #     if attachments and msg.author != self.bot.user:
+    #         file = attachments[0]
+    #         file.filename = f"test_{file.filename}"
+    #         spoiler = await file.to_file()
+    #         await msg.channel.send(file=spoiler)
+    #     """ if(msg.content == "check_channel_id"):
+    #         print(f'Dc_msg: {msg.channel.id}')
+    #     if msg.content == '<:MeMe:616147400792342538>' and msg.author != self.bot.user:
+    #         await msg.channel.send('<:MeMe:616147400792342538>') """ 
 
     @commands.command()
     async def cleartest(self, ctx, number):
