@@ -23,7 +23,7 @@ _logger = logging.getLogger(__name__)
 #     """ % CONFIG_SETTING_PATH)
 
 bot = commands.Bot(
-    command_prefix=config['prefix'], case_insensitive=True)
+    command_prefix=config['prefix'].split(','), case_insensitive=True)
 
 # base robot command 
 func = dc_main_func(bot)

@@ -1,10 +1,16 @@
 import configparser
+import logging
 import optparse
 import os
 import sys
+from typing import Dict
 import release
-from config import dictlogging
+from tools import data,default
 
+_logger = logging.getLogger(__name__)
+
+DICTCONFIG_PATH = 'config'
+DICTCONFIG_FILE = 'dictlogging.json'
 
 class MyOption (optparse.Option, object):
     """ optparse Option with two additional attributes.
@@ -27,10 +33,23 @@ class MyOption (optparse.Option, object):
 
 class confitgmanager(object):
     def __init__(self) -> None:
+        
+        prefix = default.PREFIX
+        # token = default.TOKEN
+
+        # checking dictConfig file
+        dictlogging_file = data.DataImport(os.path.join(DICTCONFIG_PATH, DICTCONFIG_FILE))
+        logging_config = dictlogging_file.get_file_data()
+        print('logging_config:',logging_config)
+        if not logging_config:
+            logging_config = default.LOGGING_CONFIG_DEFAULT
+            dictlogging_file.write_file_data(data=logging_config, indent=4)
 
         self.options = {
             'test': 'test',
-            'logging_config': dictlogging.LOGGING_CONFIG
+            'prefix': prefix,
+            # 'token': token,
+            'logging_config': logging_config, 
         }
 
         self.casts = {}
@@ -55,7 +74,7 @@ class confitgmanager(object):
     def _parse_config(self, args=None):
         # TODO use appdirs
         rcfilepath = os.path.join(os.path.abspath(os.path.dirname(sys.argv[0])), 'config', 'discord-robot.conf')
-        print('rcfilepath:', rcfilepath)
+        _logger.debug(f'rcfilepath: {rcfilepath}')
         self.rcfile = os.path.abspath(rcfilepath)
         self.load()
 
@@ -64,7 +83,7 @@ class confitgmanager(object):
         try:
             p.read([self.rcfile])
             for (name, value) in p.items('options'):
-                print(name, value)
+                _logger.debug(f'name: {name}, value: {value}')
                 if value == 'True' or value == 'true':
                     value = True
                 if value == 'False' or value == 'false':
@@ -72,7 +91,7 @@ class confitgmanager(object):
                 self.options[name] = value
             # parse the other sections, as well
             for sec in p.sections():
-                print('sec:', sec)
+                _logger.debug(f'sec: {sec}')
                 if sec == 'options':
                     continue
                 if not self.misc.has_key(sec):
@@ -98,7 +117,7 @@ class confitgmanager(object):
             self.options[key] = optparse.Option.TYPE_CHECKER[self.casts[key].type](self.casts[key], key, self.options[key])
 
     def __getitem__(self, key):
-        return self.options[key]
+        return self.options[key]    
 
 
 config = confitgmanager()
