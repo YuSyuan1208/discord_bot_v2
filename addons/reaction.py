@@ -3,7 +3,7 @@ import logging
 
 _logging = logging.getLogger(__name__)
 
-REACTION_DEFAULT_EMOJI = '🆖'
+REACTION_DEFAULT_EMOJI = ['0️⃣','1️⃣','2️⃣','3️⃣','4️⃣','5️⃣','6️⃣','7️⃣','8️⃣','9️⃣','🔟']
 REACTION_DEFAULT_SIMPLE = ' - '
 
 
@@ -33,22 +33,27 @@ class Reaction():
             except:
                 return False
 
-    def add_reaction_list(self, method_name, method, emoji=REACTION_DEFAULT_EMOJI):
+    def add_reaction_list(self, method_name, method, emoji=False):
         if self._check_method_name():
+            if not emoji:
+                if len(self.react_list) > 10:
+                    _logging.warning('emoji must be give.')
+                    return False
+                emoji = REACTION_DEFAULT_EMOJI[len(self.react_list)]
             self.react_list.append({
                 'name': method_name,
                 'method': method,
                 'emoji': emoji,
             })
             return True
-        logging.wran('method_name empty or not string.')
+        _logging.warning('method_name empty or not string.')
         return False
 
     async def send_react_list(self, ctx, sample=REACTION_DEFAULT_SIMPLE):
 
         channel_id = self._get_channel_id(ctx)
         if not channel_id:
-            logging.wran('reaction channel id get fail.')
+            _logging.warning('reaction channel id get fail.')
             return False
         content = ''
         if self.header:
@@ -59,7 +64,10 @@ class Reaction():
         emoji_list = [react.get('emoji')for react in self.react_list]
         self.channel_id = channel_id
         message = await ctx.send(content)
+        self.message = message
         self.message_id = message.id
         for emoji in emoji_list:
-            message.add_reaction(emoji)
+            await message.add_reaction(emoji)
         return True
+
+reaction = Reaction()
