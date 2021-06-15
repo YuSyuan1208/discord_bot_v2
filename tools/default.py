@@ -1,4 +1,9 @@
 PREFIX = '*'
+CONF_DEFAULT = """
+[options]
+prefix = %s
+token = 
+""" % PREFIX
 LOGGING_CONFIG_DEFAULT = { 
     'version': 1,
     'disable_existing_loggers': True,

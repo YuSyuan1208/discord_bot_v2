@@ -9,8 +9,9 @@ from tools import data,default
 
 _logger = logging.getLogger(__name__)
 
-DICTCONFIG_PATH = 'config'
-DICTCONFIG_FILE = 'dictlogging.json'
+CONFIG_PATH = 'config'
+CONFIG_CONF_FILE = 'discord-robot.conf'
+CONFIG_DICTCONFIG_FILE = 'dictlogging.json'
 
 class MyOption (optparse.Option, object):
     """ optparse Option with two additional attributes.
@@ -38,7 +39,8 @@ class confitgmanager(object):
         # token = default.TOKEN
 
         # checking dictConfig file
-        dictlogging_file = data.DataImport(os.path.join(DICTCONFIG_PATH, DICTCONFIG_FILE))
+        dictlogging_path = os.path.join(CONFIG_PATH, CONFIG_DICTCONFIG_FILE)
+        dictlogging_file = data.DataImport(dictlogging_path)
         logging_config = dictlogging_file.get_file_data()
         print('logging_config:',logging_config)
         if not logging_config:
@@ -73,9 +75,17 @@ class confitgmanager(object):
 
     def _parse_config(self, args=None):
         # TODO use appdirs
-        rcfilepath = os.path.join(os.path.abspath(os.path.dirname(sys.argv[0])), 'config', 'discord-robot.conf')
+        rcfilepath = os.path.join(os.path.abspath(os.path.dirname(sys.argv[0])), CONFIG_PATH, CONFIG_CONF_FILE)
         _logger.debug(f'rcfilepath: {rcfilepath}')
         self.rcfile = os.path.abspath(rcfilepath)
+
+        conf_file = data.DataImport(rcfilepath, rw_type='str')
+        config = conf_file.get_file_data()
+        print('config:', config)
+        if not config:
+            config = default.CONF_DEFAULT
+            conf_file.write_file_data(data=config)
+
         self.load()
 
     def load(self):

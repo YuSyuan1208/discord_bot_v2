@@ -38,4 +38,7 @@ bot.add_command(commands.Command(func.reload))
 
 
 def run():
-    bot.run(config['token'])
+    if not config['token']:
+        _logger.error(f'Discord robot TOKEN not setting. Please set in {config.rcfile}')
+    else:
+        bot.run(config['token'])
