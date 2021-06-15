@@ -1,6 +1,6 @@
 {
     'name': 'team_fight',
     'depends': [],
-    'installable': False,
+    'installable': True,
     'auto_install': True,
 }

@@ -84,6 +84,9 @@ class team_fight(model.Cog_Extension):
         """ file 拿取 """
         await self._get_message_setting()
 
+        if not (list_rs and now_rs):
+            _logger.error('報名清單可能尚未建立，請輸入清單id或使用指令建立清單(*清單_print all 1)')
+
         ''' channel object '''
         if team_fight_function_enable and team_fight_list_compare_enable:
             meme_channel_obj = bot.get_channel(meme_channel)

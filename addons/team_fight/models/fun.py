@@ -8,7 +8,7 @@ _logger = logging.getLogger(__name__)
 
 channel_data_path = 'addons/team_fight/data/channel.json'
 channel_file = DataImport(channel_data_path)
-channel_data = channel_file.get_file_data()
+channel_data = channel_file.get_file_data(True)
 
 """ --------------- Initial Parameter --------------- """
 # React
@@ -19,7 +19,7 @@ team_fight_list_compare_enable = True  # 重啟清單比對功能
 team_fight_function_enable = True  # 戰隊站功能
 team_fight_data_save_enable = False # 儲存清單資訊到本地端
 limit_enable = True  # 指令權限
-if team_fight_function_enable:
+if team_fight_function_enable and channel_data:
     robot_id = channel_data['robot_id']  # robot自己的id代碼
     meme_channel = channel_data['meme_channel']  # 測試訊息用頻道
     # 限制team_fight指令觸發頻道(舊)無用
@@ -110,7 +110,7 @@ except Exception as e:
 list_rs = list_msg_tmp_file.get_file_data()
 now_rs = now_data_file.get_file_data()
 if not (list_rs and now_rs):
-    _logger.error('報名清單可能尚未建立，請輸入清單id或使用指令建立清單(*清單_print all 1)')
+    # _logger.error('報名清單可能尚未建立，請輸入清單id或使用指令建立清單(*清單_print all 1)')
     list_get_flag = False
     team_fight_list_compare_enable = False
 else:
