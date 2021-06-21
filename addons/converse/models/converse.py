@@ -26,20 +26,43 @@ class converse(model.Cog_Extension):
     @commands.Cog.listener()
     async def on_ready(self):
         await super().on_ready()
-        re = reaction
+        re = reaction.Reaction()
         self.reaction_list.append(re)
         re.add_reaction_list('test', 'test')
+        re.add_reaction_list('test1', 'test1')
+        re.add_reaction_list('test2', 'test2')
+        re.add_reaction_list('test3', 'test3')
+        re.add_reaction_list('test4', 'test4')
     
     @commands.Cog.listener()
     async def on_raw_reaction_add(self, payload):
         mes_id = payload.message_id
         user_id = payload.user_id
         channel_id = payload.channel_id
+        emoji = payload.emoji
 
-        message = [re.message for re in self.reaction_list if re.message_id == mes_id]
-        message = message[0] if message else False
-        
+        if user_id != self.bot.user.id:
+            re = False
+            for i in self.reaction_list:
+                if i.message_id == mes_id:
+                    re = i
+                    break
+            if re:
+                message = re.message 
+                _logger.debug(f'message: {message}')
+                if message:
+                    react = False
+                    for i in re.react_list:
+                        print(i.get('emoji'),emoji,i.get('emoji') == str(emoji))
+                        if i.get('emoji') == str(emoji):
+                            react = i
+                            break
+                    if react:
+                        _logger.debug(f'react: {react}')
+                            
+
 
     @commands.command()
     async def start(self, ctx):
-        await self.reaction.send_react_list(ctx)
+        for reaction in self.reaction_list:
+            await reaction.send_react_list(ctx)

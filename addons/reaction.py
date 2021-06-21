@@ -9,6 +9,7 @@ REACTION_DEFAULT_SIMPLE = ' - '
 
 class Reaction():
 
+    message = None
     channel_id = 0
     message_id = 0
     react_list = []
@@ -34,7 +35,7 @@ class Reaction():
                 return False
 
     def add_reaction_list(self, method_name, method, emoji=False):
-        if self._check_method_name():
+        if self._check_method_name(method_name):
             if not emoji:
                 if len(self.react_list) > 10:
                     _logging.warning('emoji must be give.')
@@ -58,7 +59,8 @@ class Reaction():
         content = ''
         if self.header:
             content += self.header+'\n'
-        content = '\n'.join([react.get('method_name')+sample+react.get('emoji') for react in self.react_list])
+        _logging.debug(f'self.react_list: {self.react_list}')
+        content = '\n'.join([react.get('emoji')+sample+react.get('name') for react in self.react_list])
         if self.footer:
             content += self.footer+'\n'
         emoji_list = [react.get('emoji')for react in self.react_list]
@@ -69,5 +71,3 @@ class Reaction():
         for emoji in emoji_list:
             await message.add_reaction(emoji)
         return True
-
-reaction = Reaction()
