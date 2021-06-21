@@ -5,7 +5,7 @@ import logging
 import sys
 _logger = logging.getLogger(__name__)
 
-
+channel_ket_list = ['robot_id', 'run_out_before_look', 'backup_channel_id', 'only_meme_speak_channel']
 channel_data_path = 'addons/team_fight/data/channel.json'
 channel_file = DataImport(channel_data_path)
 channel_data = channel_file.get_file_data(True)
@@ -21,9 +21,9 @@ team_fight_data_save_enable = False # 儲存清單資訊到本地端
 limit_enable = True  # 指令權限
 if team_fight_function_enable and channel_data:
     robot_id = channel_data['robot_id']  # robot自己的id代碼
-    meme_channel = channel_data['meme_channel']  # 測試訊息用頻道
+    # meme_channel = channel_data['meme_channel']  # 測試訊息用頻道
     # 限制team_fight指令觸發頻道(舊)無用
-    tea_fig_channel = channel_data['tea_fig_channel']
+    tea_fig_channel = 0 # channel_data['tea_fig_channel']
     # 限制team_fight指令觸發頻道(新)，且發送清單更新資訊
     run_out_before_look = channel_data['run_out_before_look']
     backup_channel_id = channel_data['backup_channel_id']  # 備份頻道

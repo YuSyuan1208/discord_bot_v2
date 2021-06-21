@@ -89,7 +89,7 @@ class team_fight(model.Cog_Extension):
 
         ''' channel object '''
         if team_fight_function_enable and team_fight_list_compare_enable:
-            meme_channel_obj = bot.get_channel(meme_channel)
+            # meme_channel_obj = bot.get_channel(meme_channel)
             only_meme_speak_channel_obj = bot.get_channel(only_meme_speak_channel)
             run_channel = bot.get_channel(run_out_before_look)
             backup_channel = bot.get_channel(backup_channel_id)
@@ -285,7 +285,7 @@ class team_fight(model.Cog_Extension):
         ''' list message object (測試用)'''
         # [list] get data
         if not team_fight_list_compare_enable and team_fight_function_enable and list_get_flag:
-            meme_channel_obj = bot.get_channel(meme_channel)
+            # meme_channel_obj = bot.get_channel(meme_channel)
             only_meme_speak_channel_obj = bot.get_channel(only_meme_speak_channel)
             run_channel = bot.get_channel(run_out_before_look)
             backup_channel = bot.get_channel(backup_channel_id)
