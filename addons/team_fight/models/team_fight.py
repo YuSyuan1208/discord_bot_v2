@@ -147,8 +147,9 @@ class team_fight(model.Cog_Extension):
                 # [now] backup data
                 if(now_changed_content):
                     # msg_tip.append(await run_channel.send(content=f'資料有更動，備份中'))
-                    await backup_channel.send(content=now_changed_content)
+                    # await backup_channel.send(content=now_changed_content)
                     # msg_tip.append(await run_channel.send(content=f'備份完成'))
+                    pass
 
                 ''' list message object '''
                 # [list] get data
@@ -249,7 +250,7 @@ class team_fight(model.Cog_Extension):
                         # await run_channel.send(content=list_changed_content)
                         # [list] backup data
                         # msg_tip.append(await run_channel.send(content=f'資料有更動，備份中'))
-                        await backup_channel.send(content=list_changed_content)
+                        # await backup_channel.send(content=list_changed_content)
                         # msg_tip.append(await run_channel.send(content=f'備份完成'))
                 data_save()
                 now_save()
@@ -280,7 +281,7 @@ class team_fight(model.Cog_Extension):
                 for i in msg_tip:
                     await i.delete(delay=5)
 
-                # await backup_channel.send(content=f'系統重啟完成!')
+                await backup_channel.send(content=f'系統重啟完成!')
 
         ''' list message object (測試用)'''
         # [list] get data
