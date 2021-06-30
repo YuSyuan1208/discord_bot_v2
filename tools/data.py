@@ -5,8 +5,6 @@ import json
 import errno
 import logging
 
-_logger = logging.getLogger(__name__)
-
 
 class DataImport():
 
@@ -43,20 +41,21 @@ class DataImport():
         not_find_keys = []
         if keys:
             not_find_keys = [key for key in keys if key not in self._file_data]
-        _logger.debug(f'file= {self._file_path}, keys= {keys}, not_find_keys= {not_find_keys}')
+        logging.debug(f'file= {self._file_path}, keys= {keys}, not_find_keys= {not_find_keys}')
+        print(f'file= {self._file_path}, keys= {keys}, not_find_keys= {not_find_keys}')
         if not_find_keys:
-            _logger.warning(f'keys not in file.(not_find_keys= {not_find_keys}, file= {self._file_path})')
+            logging.warning(f'keys not in file.(not_find_keys= {not_find_keys}, file= {self._file_path})')
             return False
         else:
             return True
 
     def _check_directory(self):
         if not os.path.exists(self._file_directory):
-            _logger.warning(f'No such directory: {self._file_directory}')
+            logging.warning(f'No such directory: {self._file_directory}')
             if self._directory_create:
                 try:
                     os.makedirs(self._file_directory)
-                    _logger.info(f'{self._file_directory} created.')
+                    logging.info(f'{self._file_directory} created.')
                     return True
                 except OSError as exc:  # Guard against race condition
                     if exc.errno != errno.EEXIST:
@@ -69,7 +68,7 @@ class DataImport():
         """ file control """
         if action_type == 'r':
             if os.path.isfile(file_path):
-                _logger.info(file_path + ' file getting.')
+                logging.info(file_path + ' file getting.')
                 try:
                     if os.stat(file_path).st_size != 0:
                         with open(file_path, 'r', encoding=self._file_encoding) as ofile:
@@ -81,15 +80,15 @@ class DataImport():
                                 self._file_data = ofile.read()
                         return self._file_data
                     else:
-                        _logger.warning(f'file empty. (path={file_path})')
+                        logging.warning(f'file empty. (path={file_path})')
                         return False
                 except Exception as e:
                     raise ValueError(f'file getting error.(message= {sys.exc_info()})')
             else:
-                _logger.warning(file_path + ' file not find.')
+                logging.warning(file_path + ' file not find.')
                 return False
         elif action_type == 'w':
-            _logger.info(file_path + ' file saving.')
+            logging.info(file_path + ' file saving.')
             with open(file_path, 'w') as ofile:
                 if self._file_type == 'json':
                     json.dump(self._file_data, ofile, indent=indent)
