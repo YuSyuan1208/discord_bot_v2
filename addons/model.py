@@ -12,6 +12,7 @@ MODEL_DATA_PATH = 'data'
 MODEL_SETTING_FILE = 'setting.json'
 MODEL_SETTING_KEYS = ['msg_id', 'channel_id']
 
+
 class Cog_Extension(commands.Cog):
 
     _name = None
@@ -21,6 +22,9 @@ class Cog_Extension(commands.Cog):
     async def on_ready(self):
         _logger.info(self._name + ' on_ready.')
         # await self._get_message_setting()
+
+    async def reload_setting(self, ctx):
+        await self._get_message_setting()
 
     def __init__(self, bot):
         """  """
@@ -35,7 +39,6 @@ class Cog_Extension(commands.Cog):
         else:
             _logger.error('_name not setting.')
             raise NameError('model _name not setting.')
-
 
     def _str_to_list(self, str):
         """ covert message object content to list """
@@ -141,5 +144,3 @@ class Cog_Extension(commands.Cog):
         else:
             _logger.warning(self._name + ' name not set.')
             return False
-
-

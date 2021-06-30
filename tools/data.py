@@ -42,7 +42,6 @@ class DataImport():
         if keys:
             not_find_keys = [key for key in keys if key not in self._file_data]
         logging.debug(f'file= {self._file_path}, keys= {keys}, not_find_keys= {not_find_keys}')
-        print(f'file= {self._file_path}, keys= {keys}, not_find_keys= {not_find_keys}')
         if not_find_keys:
             logging.warning(f'keys not in file.(not_find_keys= {not_find_keys}, file= {self._file_path})')
             return False
