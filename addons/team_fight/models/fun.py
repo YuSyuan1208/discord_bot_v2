@@ -9,6 +9,8 @@ channel_ket_list = ['robot_id', 'run_out_before_look', 'backup_channel_id', 'onl
 channel_data_path = 'addons/team_fight/data/channel.json'
 channel_file = DataImport(channel_data_path)
 channel_data = channel_file.get_file_data(True)
+if not channel_file._check_json_file(channel_ket_list):
+    pass
 
 """ --------------- Initial Parameter --------------- """
 # React
@@ -19,13 +21,20 @@ team_fight_list_compare_enable = True  # 重啟清單比對功能
 team_fight_function_enable = True  # 戰隊站功能
 team_fight_data_save_enable = False # 儲存清單資訊到本地端
 limit_enable = True  # 指令權限
+
+# 預設頻道id
+robot_id = 0
+only_meme_speak_channel = 0
+tea_fig_channel = 0
+run_out_before_look = 0
+backup_channel_id = 0
+only_meme_speak_channel = 0
+
 if team_fight_function_enable and channel_data:
     robot_id = channel_data['robot_id']  # robot自己的id代碼
     # meme_channel = channel_data['meme_channel']  # 測試訊息用頻道
-    # 限制team_fight指令觸發頻道(舊)無用
-    tea_fig_channel = 0 # channel_data['tea_fig_channel']
-    # 限制team_fight指令觸發頻道(新)，且發送清單更新資訊
-    run_out_before_look = channel_data['run_out_before_look']
+    tea_fig_channel = 0 # channel_data['tea_fig_channel'] # 限制team_fight指令觸發頻道(舊)無用
+    run_out_before_look = channel_data['run_out_before_look'] # 限制team_fight指令觸發頻道(新)，且發送清單更新資訊
     backup_channel_id = channel_data['backup_channel_id']  # 備份頻道
     only_meme_speak_channel = channel_data['only_meme_speak_channel']  # 清單頻道
     list_refresh_week = 1  # 清單列表的循環次數(周)

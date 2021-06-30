@@ -77,10 +77,15 @@ class team_fight(model.Cog_Extension):
 
     """ ----------------- 重啟清單比對 -----------------"""
 
+    @commands.command()
+    async def reload_setting(self, ctx):
+        await super().reload_setting(ctx)
+
     @commands.Cog.listener()
     async def on_ready(self):
-        bot = self.bot
+        await super().on_ready()
 
+        bot = self.bot
         """ file 拿取 """
         await self._get_message_setting()
 
