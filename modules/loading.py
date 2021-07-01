@@ -15,10 +15,11 @@ class AddonsModuleImport():
     def __init__(self):
         self.modules_load()
 
-    def modules_load(self):
+    def modules_load(self, module=False):
         """ Get modules list. """
         _logger.debug(f'os.listdir(ADDONS_PATH): {os.listdir(ADDONS_PATH)}')
-        for module in os.listdir(ADDONS_PATH):
+        dir_list = [module] if module else os.listdir(ADDONS_PATH)
+        for module in dir_list:
             addons_module_path = opj(ADDONS_PATH, module)
             if os.path.isdir(addons_module_path):
                 addons_module_default_path = opj(addons_module_path, ADDONS_DEFAULT_FILE)
@@ -27,13 +28,33 @@ class AddonsModuleImport():
                     # module ADDONS_DEFAULT_FILE loading
                     manifest = ast.literal_eval(open(addons_module_default_path).read())
                     manifest.update({
-                        'addons_module_path': addons_module_path
+                        'addons_module_path': addons_module_path,
+                        'installed': True if module else False
                     })
                     addons_list[module] = manifest
                     # _logger.debug(f'ADDONS_DEFAULT_FILE= {manifest}')
                     _logger.info(f'Loading {module}')
+        _logger.debug(f'addons_list.module: {[module for module in addons_list]}')
+    
+    def module_unload(self, module):
+        """ Unload module """
+        if module in addons_list:
+            self.module_installed(module, False)
+            _logger.info(f'Unloading {module}')
+        else: 
+            _logger.error(f'Unloading Fail. {module} not in addons_list')
+    
+    def module_reload(self, module):
+        """ Reload module """
+        self.module_unload(module)
+        self.modules_load(module)
+    
+    def module_installed(self ,module, state=True):
+        """  """
+        addons_list[module].update({'installed': state})
 
-def get_load_extension():
+
+def get_auto_install_extension():
     """ If auto_install true ,bot load extension modules. """
     module_list = []
     for module in addons_list:
@@ -50,3 +71,12 @@ def get_load_extension():
                 module_list.remove(module)
 
     return module_list
+
+def get_installable_list():
+    """ If installable true ,bot load extension modules. """
+    module_list = []
+    for module in addons_list:
+        if 'installable' in addons_list[module] and addons_list[module]['installable'] == True:
+            module_list.append(module)
+    return module_list
+
