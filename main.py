@@ -9,7 +9,7 @@ _logger = logging.getLogger(__name__)
 
 # Load extension modules
 load_modules = get_auto_install_extension()
-_logger.debug(f'load_modules= {load_modules}')
 for module in load_modules:
     bot.bot.load_extension(f'{ADDONS_PATH}.{module}')
+_logger.info(f'installed_modules= {base.ads.ModuleManage.get_module_installed()}')
 bot.run()

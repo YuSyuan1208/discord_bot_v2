@@ -29,29 +29,32 @@ class AddonsModuleImport():
                     manifest = ast.literal_eval(open(addons_module_default_path).read())
                     manifest.update({
                         'addons_module_path': addons_module_path,
-                        'installed': True if module else False
                     })
                     addons_list[module] = manifest
+                    self.set_module_installed(module, True)
                     # _logger.debug(f'ADDONS_DEFAULT_FILE= {manifest}')
                     _logger.info(f'Loading {module}')
-        _logger.debug(f'addons_list.module: {[module for module in addons_list]}')
-    
+
     def module_unload(self, module):
         """ Unload module """
         if module in addons_list:
-            self.module_installed(module, False)
+            self.set_module_installed(module, False)
             _logger.info(f'Unloading {module}')
-        else: 
+        else:
             _logger.error(f'Unloading Fail. {module} not in addons_list')
-    
+
     def module_reload(self, module):
         """ Reload module """
         self.module_unload(module)
         self.modules_load(module)
-    
-    def module_installed(self ,module, state=True):
+
+    def set_module_installed(self, module, state=True):
         """  """
         addons_list[module].update({'installed': state})
+
+    def get_module_installed(self):
+        """  """
+        return [module for module in addons_list if addons_list[module].get('installed', False)]
 
 
 def get_auto_install_extension():
@@ -72,6 +75,7 @@ def get_auto_install_extension():
 
     return module_list
 
+
 def get_installable_list():
     """ If installable true ,bot load extension modules. """
     module_list = []
@@ -79,4 +83,3 @@ def get_installable_list():
         if 'installable' in addons_list[module] and addons_list[module]['installable'] == True:
             module_list.append(module)
     return module_list
-
