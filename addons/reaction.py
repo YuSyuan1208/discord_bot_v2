@@ -12,13 +12,13 @@ class Reaction():
     message = None
     channel_id = 0
     message_id = 0
-    react_list = []
     header = ''
     footer = ''
 
     def __init__(self, header='', footer='') -> None:
         self.header = header
         self.footer = footer
+        self.react_list = []
 
     def _check_method_name(self, method_name):
         if method_name and type(method_name).__name__ == 'str':
@@ -26,7 +26,7 @@ class Reaction():
         return False
 
     def _get_channel_id(self, ctx):
-        if type(ctx).__name__ == 'discord.channel.TextChannel':
+        if str(type(ctx)) == "<class 'discord.channel.TextChannel'>":
             return ctx.id
         else:
             try:
@@ -34,15 +34,15 @@ class Reaction():
             except:
                 return False
 
-    def add_reaction_list(self, method_name, method, emoji=False):
-        if self._check_method_name(method_name):
+    def add_reaction_list(self, name, method, emoji=False):
+        if self._check_method_name(name):
             if not emoji:
                 if len(self.react_list) > 10:
                     _logging.warning('emoji must be give.')
                     return False
                 emoji = REACTION_DEFAULT_EMOJI[len(self.react_list)]
             self.react_list.append({
-                'name': method_name,
+                'name': name,
                 'method': method,
                 'emoji': emoji,
             })
@@ -50,24 +50,59 @@ class Reaction():
         _logging.warning('method_name empty or not string.')
         return False
 
-    async def send_react_list(self, ctx, sample=REACTION_DEFAULT_SIMPLE):
+    async def add_emoji_lsit(self):
+        emoji_list = [react.get('emoji')for react in self.react_list]
+        for emoji in emoji_list:
+            await self.message.add_reaction(emoji)
+
+    async def send_react_list(self, ctx):
 
         channel_id = self._get_channel_id(ctx)
         if not channel_id:
             _logging.warning('reaction channel id get fail.')
             return False
+        _logging.debug(f'self.react_list: {self.react_list}')
+        content = self.get_reaction_content()
+        message = await ctx.send(content)
+        self.message = message
+        self.channel_id = channel_id
+        self.message_id = message.id
+        await self.add_emoji_lsit()
+        return True
+
+    async def clear_reactions(self, ctx):
+        """  """
+        await self.message.clear_reactions()
+
+    async def edit_reaction_list(self, re):
+        """  """
+        _logging.debug(f're: {re}')
+        re2 = self
+        async def edit(ctx):
+            message = re.message
+            channel_id = re2._get_channel_id(ctx)
+            if not channel_id:
+                _logging.warning('reaction channel id get fail.')
+                return False
+            content = re2.get_reaction_content()
+            await re.clear_reactions(ctx)
+            await message.edit(content=content)
+            re2.message = message
+            re2.channel_id = channel_id
+            re2.message_id = message.id
+            re.message = None
+            re.channel_id = 0
+            re.message_id = 0
+            await re2.add_emoji_lsit()
+        return edit
+
+    def get_reaction_content(self, sample=REACTION_DEFAULT_SIMPLE):
+        """  """
         content = ''
         if self.header:
             content += self.header+'\n'
-        _logging.debug(f'self.react_list: {self.react_list}')
-        content = '\n'.join([react.get('emoji')+sample+react.get('name') for react in self.react_list])
+        content += '\n'.join([react.get('emoji')+sample+react.get('name') for react in self.react_list])
         if self.footer:
             content += self.footer+'\n'
-        emoji_list = [react.get('emoji')for react in self.react_list]
-        self.channel_id = channel_id
-        message = await ctx.send(content)
-        self.message = message
-        self.message_id = message.id
-        for emoji in emoji_list:
-            await message.add_reaction(emoji)
-        return True
+        _logging.debug(f'content: {content}')
+        return content
