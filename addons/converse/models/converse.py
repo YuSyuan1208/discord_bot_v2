@@ -2,6 +2,7 @@ import logging
 
 from discord.ext import commands
 from addons import model, reaction
+from base.ads import ModuleManage, modules_reaction_list
 
 _logger = logging.getLogger(__name__)
 
@@ -25,6 +26,12 @@ class converse(model.Cog_Extension):
     def _get_message(self, ctx):
         return
 
+    async def imoport_reaction_list(self, module, re):
+        """  """
+        s_re = self.start_reaction_list[0]
+        s_re.add_reaction_list(f'**`{module}`**', await re.edit_reaction_list(s_re, True))
+
+
     @commands.Cog.listener()
     async def on_ready(self):
         await super().on_ready()
@@ -32,14 +39,14 @@ class converse(model.Cog_Extension):
         re.header = 're'
         self.reaction_list.append(re)
         self.start_reaction_list.append(re)
-        async def t(t):
+        def t(t):
             async def a(ctx):
                 print(t)
                 await ctx.send(t)
             return a
-        re.add_reaction_list('模組列表', await t('test11'), emoji='🧡')
-        re.add_reaction_list('美美管理員', await t('test12'), emoji='💛')
-        re.add_reaction_list('問題回報', await t('test13'), emoji='💚')
+        re.add_reaction_list('模組列表', t('test11'), emoji='🧡')
+        re.add_reaction_list('美美管理員', t('test12'), emoji='💛')
+        re.add_reaction_list('問題回報', t('test13'), emoji='💚')
         re.add_reaction_list('清空反應', re.clear_reactions, emoji='💙')
         # re.add_reaction_list('re2', re.clear_reactions)
         print('re:',re)
@@ -47,14 +54,17 @@ class converse(model.Cog_Extension):
         re2 = reaction.Reaction()
         self.reaction_list.append(re2)
         re2.header = 're2'
-        re2.add_reaction_list('test21', await t('test21'))
-        re2.add_reaction_list('test22', await t('test22'))
-        re2.add_reaction_list('test23', await t('test23'))
+        re2.add_reaction_list('test21', t('test21'))
+        re2.add_reaction_list('test22', t('test22'))
+        re2.add_reaction_list('test23', t('test23'))
         print('re2:',re2)
 
         # re.add_reaction_list('test14', re2.send_react_list)
-        re.add_reaction_list('re2', await re2.edit_reaction_list(re))
-        re2.add_reaction_list('re', await re.edit_reaction_list(re2))
+        re.add_reaction_list('**`re2`**', await re2.edit_reaction_list(re, True))
+        # re2.add_reaction_list('re', await re.edit_reaction_list(re2))
+        
+        # team_fight_converse.add_reaction_list('re2', await re2.edit_reaction_list(team_fight_converse))
+
     
     @commands.Cog.listener()
     async def on_raw_reaction_add(self, payload):

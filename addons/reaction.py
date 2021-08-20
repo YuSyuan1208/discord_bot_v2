@@ -5,7 +5,7 @@ _logging = logging.getLogger(__name__)
 
 REACTION_DEFAULT_EMOJI = ['0️⃣','1️⃣','2️⃣','3️⃣','4️⃣','5️⃣','6️⃣','7️⃣','8️⃣','9️⃣','🔟']
 REACTION_DEFAULT_SIMPLE = ' - '
-
+REACTION_DEFAULT_BACK_FORMAT = '**`Back`**'
 
 class Reaction():
 
@@ -50,7 +50,7 @@ class Reaction():
         _logging.warning('method_name empty or not string.')
         return False
 
-    async def add_emoji_lsit(self):
+    async def add_emoji_list(self):
         emoji_list = [react.get('emoji')for react in self.react_list]
         for emoji in emoji_list:
             await self.message.add_reaction(emoji)
@@ -67,14 +67,14 @@ class Reaction():
         self.message = message
         self.channel_id = channel_id
         self.message_id = message.id
-        await self.add_emoji_lsit()
+        await self.add_emoji_list()
         return True
 
     async def clear_reactions(self, ctx):
         """  """
         await self.message.clear_reactions()
 
-    async def edit_reaction_list(self, re):
+    async def edit_reaction_list(self, re, add_return_flag=False):
         """  """
         _logging.debug(f're: {re}')
         re2 = self
@@ -93,15 +93,17 @@ class Reaction():
             re.message = None
             re.channel_id = 0
             re.message_id = 0
-            await re2.add_emoji_lsit()
+            await re2.add_emoji_list()
+        if add_return_flag:
+            self.add_reaction_list(REACTION_DEFAULT_BACK_FORMAT, await re.edit_reaction_list(re2), emoji='⬅️')
         return edit
 
-    def get_reaction_content(self, sample=REACTION_DEFAULT_SIMPLE):
+    def get_reaction_content(self, front_sample='', mid_sample=REACTION_DEFAULT_SIMPLE, back_sample=''):
         """  """
         content = ''
         if self.header:
             content += self.header+'\n'
-        content += '\n'.join([react.get('emoji')+sample+react.get('name') for react in self.react_list])
+        content += '\n'.join([front_sample+react.get('emoji')+mid_sample+react.get('name')+back_sample for react in self.react_list])
         if self.footer:
             content += self.footer+'\n'
         _logging.debug(f'content: {content}')
