@@ -40,7 +40,7 @@ class dc_main_func():
             if type == 'load':
                 if installable and not installed:
                     self.bot.load_extension(f'{ADDONS_PATH}.{module}')
-                    ModuleManage.modules_load(module)
+                    ModuleManage.module_load(module)
                     await self.bot.get_cog(module).on_ready()
                     flag = True
             elif type == 'unload':

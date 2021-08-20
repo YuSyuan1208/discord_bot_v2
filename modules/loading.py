@@ -13,9 +13,9 @@ addons_list = {}  # list of addons ADDONS_DEFAULT_FILE content
 
 class AddonsModuleImport():
     def __init__(self):
-        self.modules_load()
+        self.modules_init()
 
-    def modules_load(self, module=False):
+    def modules_init(self, module=False):
         """ Get modules list. """
         _logger.debug(f'os.listdir(ADDONS_PATH): {os.listdir(ADDONS_PATH)}')
         dir_list = [module] if module else os.listdir(ADDONS_PATH)
@@ -31,9 +31,14 @@ class AddonsModuleImport():
                         'addons_module_path': addons_module_path,
                     })
                     addons_list[module] = manifest
-                    self.set_module_installed(module, True)
+                    self.set_module_installed(module, False)
                     # _logger.debug(f'ADDONS_DEFAULT_FILE= {manifest}')
                     _logger.info(f'Loading {module}')
+
+    def module_load(self, module):
+        """  """
+        self.modules_init(module)
+        self.set_module_installed(module, True)
 
     def module_unload(self, module):
         """ Unload module """
@@ -46,7 +51,7 @@ class AddonsModuleImport():
     def module_reload(self, module):
         """ Reload module """
         self.module_unload(module)
-        self.modules_load(module)
+        self.module_load(module)
 
     def set_module_installed(self, module, state=True):
         """  """
