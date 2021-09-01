@@ -28,10 +28,13 @@ class Reaction():
     def _get_channel_id(self, ctx):
         if str(type(ctx)) == "<class 'discord.channel.TextChannel'>":
             return ctx.id
+        elif str(type(ctx)) == "<class 'discord.raw_models.RawReactionActionEvent'>":
+            return ctx.channel_id
         else:
             try:
                 return ctx.channel.id
             except:
+                _logging.warning('_get_channel_id get fail.')
                 return False
 
     def add_reaction_list(self, name, method, emoji=False):
@@ -74,7 +77,7 @@ class Reaction():
         """  """
         await self.message.clear_reactions()
 
-    async def edit_reaction_list(self, re, add_return_flag=False):
+    def edit_reaction_list(self, re, add_return_flag=False):
         """  """
         _logging.debug(f're: {re}')
         re2 = self
@@ -95,7 +98,7 @@ class Reaction():
             re.message_id = 0
             await re2.add_emoji_list()
         if add_return_flag:
-            self.add_reaction_list(REACTION_DEFAULT_BACK_FORMAT, await re.edit_reaction_list(re2), emoji='⬅️')
+            self.add_reaction_list(REACTION_DEFAULT_BACK_FORMAT, re.edit_reaction_list(re2), emoji='⬅️')
         return edit
 
     def get_reaction_content(self, front_sample='', mid_sample=REACTION_DEFAULT_SIMPLE, back_sample=''):

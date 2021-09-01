@@ -19,22 +19,8 @@ class converse(model.Cog_Extension):
 
     selection_list = []
 
-    def _check_user_id(self, user_id):
-        if user_id in self.user_list:
-            return True
-
-    def _get_message(self, ctx):
-        return
-
-    async def imoport_reaction_list(self, module, re):
-        """  """
-        s_re = self.start_reaction_list[0]
-        s_re.add_reaction_list(f'**`{module}`**', await re.edit_reaction_list(s_re, True))
-
-
-    @commands.Cog.listener()
-    async def on_ready(self):
-        await super().on_ready()
+    def __init__(self, bot):
+        super().__init__(bot)
         re = reaction.Reaction()
         re.header = 're'
         self.reaction_list.append(re)
@@ -44,10 +30,10 @@ class converse(model.Cog_Extension):
                 print(t)
                 await ctx.send(t)
             return a
-        re.add_reaction_list('模組列表', t('test11'), emoji='🧡')
-        re.add_reaction_list('美美管理員', t('test12'), emoji='💛')
-        re.add_reaction_list('問題回報', t('test13'), emoji='💚')
-        re.add_reaction_list('清空反應', re.clear_reactions, emoji='💙')
+        re.add_reaction_list('test11', t('test11'), emoji='🧡')
+        re.add_reaction_list('test12', t('test12'), emoji='💛')
+        re.add_reaction_list('test13', t('test13'), emoji='💚')
+        re.add_reaction_list('clear_reactions', re.clear_reactions, emoji='💙')
         # re.add_reaction_list('re2', re.clear_reactions)
         print('re:',re)
 
@@ -60,11 +46,29 @@ class converse(model.Cog_Extension):
         print('re2:',re2)
 
         # re.add_reaction_list('test14', re2.send_react_list)
-        re.add_reaction_list('**`re2`**', await re2.edit_reaction_list(re, True))
+        re.add_reaction_list('**`re2`**', re2.edit_reaction_list(re, True))
         # re2.add_reaction_list('re', await re.edit_reaction_list(re2))
         
         # team_fight_converse.add_reaction_list('re2', await re2.edit_reaction_list(team_fight_converse))
 
+    def _check_user_id(self, user_id):
+        if user_id in self.user_list:
+            return True
+
+    def _get_message(self, ctx):
+        return
+
+    def imoport_reaction_list(self, module, re):
+        """  """
+        # 新增反應動作觸發列表
+        self.reaction_list.append(re)
+        # 新增至開頭清單選項列表
+        s_re = self.start_reaction_list[0]
+        s_re.add_reaction_list(f'**`{module}`**', re.edit_reaction_list(s_re, True))
+
+    @commands.Cog.listener()
+    async def on_ready(self):
+        await super().on_ready()
     
     @commands.Cog.listener()
     async def on_raw_reaction_add(self, payload):
@@ -92,7 +96,7 @@ class converse(model.Cog_Extension):
                             break
                     if react:
                         method = react.get('method')
-                        await method(channel)
+                        await method(payload)
                         _logger.debug(f'react: {react}')
                             
 
