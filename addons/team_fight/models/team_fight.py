@@ -75,6 +75,25 @@ class team_fight(model.Cog_Extension):
     _data = {}
     _set_default = {}
 
+    def __init__(self, bot):
+        super().__init__(bot)
+
+    def set_reaction_list(self):
+        """  """
+        from addons import reaction
+        team_fight_converse = reaction.Reaction()
+        def t(t):
+            async def a(ctx):
+                print(t)
+                await ctx.send(t)
+            return a
+        a = lambda ctx: self.清單(ctx, 7)
+        team_fight_converse.add_reaction_list('t1', a, emoji='🧡')
+        team_fight_converse.add_reaction_list('t2', t('team_fight2'), emoji='💛')
+        team_fight_converse.add_reaction_list('t3', t('team_fight2'), emoji='💚')
+        converse_module = self.bot.get_cog('converse')
+        converse_module.imoport_reaction_list(self._name, team_fight_converse)
+
     """ ----------------- 重啟清單比對 -----------------"""
 
     @commands.command()
@@ -84,6 +103,8 @@ class team_fight(model.Cog_Extension):
     @commands.Cog.listener()
     async def on_ready(self):
         await super().on_ready()
+
+        self.set_reaction_list()
 
         bot = self.bot
         """ file 拿取 """
@@ -738,9 +759,16 @@ class team_fight(model.Cog_Extension):
                       brief="Answers from the beyond.",
                       aliases=['list', 'l'])
     async def 清單(self, ctx, *msg):
+        if(str(type(ctx)) == "<class 'discord.raw_models.RawReactionActionEvent'>"):
+            channel_id = ctx.channel_id
+            author_id = ctx.user_id
+            ctx = self.bot.get_channel(channel_id)
+        else:
+            channel_id = ctx.channel.id
+            author_id = ctx.author.id
+
         force_week = now['force_week']
-        channel_id = ctx.channel.id
-        author_id = ctx.author.id
+
         ''' 權限 '''
         if (admin_check(author_id, self.bot, self) != True):
             if(limit_enable):
