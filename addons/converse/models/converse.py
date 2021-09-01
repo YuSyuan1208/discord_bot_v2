@@ -2,7 +2,6 @@ import logging
 
 from discord.ext import commands
 from addons import model, reaction
-from base.ads import ModuleManage, modules_reaction_list
 
 _logger = logging.getLogger(__name__)
 
