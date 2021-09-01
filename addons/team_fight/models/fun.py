@@ -3,12 +3,16 @@ import ast
 import json
 import logging
 import sys
+from .default import *
+
 _logger = logging.getLogger(__name__)
 
 channel_ket_list = ['run_out_before_look', 'backup_channel_id', 'only_meme_speak_channel']
 channel_data_path = 'addons/team_fight/data/channel.json'
 channel_file = DataImport(channel_data_path)
 channel_data = channel_file.get_file_data(True)
+if not channel_data:
+    channel_file.write_file_data(data=CHANNEL_DEFAULT)
 if not channel_file._check_json_file(channel_ket_list):
     pass
 
@@ -24,11 +28,10 @@ limit_enable = True  # 指令權限
 
 # 預設頻道id
 # robot_id = 0
-only_meme_speak_channel = 0
 tea_fig_channel = 0
+only_meme_speak_channel = 0
 run_out_before_look = 0
 backup_channel_id = 0
-only_meme_speak_channel = 0
 
 if team_fight_function_enable and channel_data:
     # robot_id = channel_data['robot_id']  # robot自己的id代碼
