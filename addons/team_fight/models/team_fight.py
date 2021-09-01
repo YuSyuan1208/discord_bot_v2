@@ -1361,7 +1361,7 @@ class team_fight(model.Cog_Extension):
         # print( emoji_id + "123")
         # print(user_id, self.bot.user)
 
-        if (channel_id == only_meme_speak_channel) and (user_id != robot_id):
+        if (channel_id == only_meme_speak_channel) and (user_id != self.bot.user.id):
             emoji_id = payload.emoji
             if(str(emoji_id) == sign_up_emoji):
 
@@ -1496,7 +1496,7 @@ class team_fight(model.Cog_Extension):
         channel_id = payload.channel_id
         channel = self.bot.get_channel(channel_id)
         emoji_id = payload.emoji
-        if channel_id == only_meme_speak_channel and (user_id != robot_id):
+        if channel_id == only_meme_speak_channel and (user_id != self.bot.user.id):
             try:
                 if(user_id != number_insert_msg[payload.message_id][0]):
                     return 0
