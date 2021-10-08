@@ -50,23 +50,16 @@ if team_fight_function_enable and channel_data:
 
 """ --------------- Initial Data --------------- """
 if team_fight_function_enable:
-    overflow = {"資訊": {"header": "", "footer": "", "hp": 90}, "報名列表": []}
-    ReportDamage = {"資訊": {"header": "", "footer": "", "hp": 90}, "報名列表": []}
-    All_OutKnife_Data = {1: {'1王': {'資訊': {"header": "", "footer": "", "hp": 600}, '報名列表': []},
-                               '2王': {'資訊': {"header": "", "footer": "", "hp": 800}, '報名列表': []},
-                               '3王': {'資訊': {"header": "", "footer": "", "hp": 1000}, '報名列表': []},
-                               '4王': {'資訊': {"header": "", "footer": "", "hp": 1200}, '報名列表': []},
-                               '5王': {'資訊': {"header": "", "footer": "", "hp": 1500}, '報名列表': []},
-                               '補償清單': overflow,
-                               '出刀清單': ReportDamage}}
+    overflow = OVERFLOW_DEFAULT
+    ReportDamage = REPORT_DAMAGE_DEFAULT
+    All_OutKnife_Data = ALL_OUT_KNIFE_DATA_DEFAULT
 
-    now = {'周': 1, '王': 1, 'limit_max_week': 10, 'force_week': 1}
+    now = NOW_DEFAULT
     list_msg_tmp_id = []  # [msg_id,...]
     list_msg_tmp = []  # [week, king, msg]
     now_msg = {}
     number_insert_msg = {}  # [msg.id] = [user_id, week, king, msg]
-    king_hp_default = [[1, 10, 600, 800, 1000, 1200, 1500], [
-        11, 34, 700, 900, 1300, 1500, 2000], [35, 44, 1700, 1800, 2000, 2100, 2300], [45, False, 8500, 9000, 9500, 10000, 11000]]
+    king_hp_default = KING_HP_DEFAULT # 各階段王總血量設定
 """ --------------- Initial Data --------------- """
 
 """ --------------- Getting Data --------------- """
@@ -148,9 +141,11 @@ def get_role_members(bot):
     #
     # 727170387091259393 功德無量
     # 734391146910056478 @TEST
-    server = bot.get_guild(727170387091259393)
-    role = server.get_role(734391146910056478)
+    server = bot.get_guild(GUILD_ID_DEFAULT)
+    role = server.get_role(ROLE_ID_DEFAULT)
     member_ids = [member.id for member in role.members]
+    if not member_ids:
+        _logger.warning(f'get_role_members fail, no member return.(guild_id={GUILD_ID_DEFAULT}, role_id={ROLE_ID_DEFAULT})')
     return member_ids
 
 
