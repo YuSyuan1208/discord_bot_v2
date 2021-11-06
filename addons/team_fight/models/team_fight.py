@@ -113,8 +113,11 @@ class team_fight(model.Cog_Extension):
     """ ----------------- 重啟清單比對 -----------------"""
 
     @commands.command()
-    async def reload_setting(self, ctx):
-        await super().reload_setting(ctx)
+    async def _load_setting(self):
+        """  """
+        await super()._load_setting()
+        global king_hp_default
+        king_hp_default = self._set_default.get('king_hp_default', king_hp_default)
 
     @commands.Cog.listener()
     async def on_ready(self):
@@ -124,7 +127,6 @@ class team_fight(model.Cog_Extension):
 
         bot = self.bot
         """ file 拿取 """
-        await self._get_message_setting()
 
         if not (list_rs and now_rs):
             _logger.error('報名清單可能尚未建立，請輸入清單id或使用指令建立清單(*清單_print all 1)')
