@@ -79,20 +79,36 @@ class team_fight(model.Cog_Extension):
         super().__init__(bot)
 
     def set_reaction_list(self):
-        """  """
-        from addons import reaction
-        team_fight_converse = reaction.Reaction()
-        def t(t):
-            async def a(ctx):
-                print(t)
-                await ctx.send(t)
-            return a
-        a = lambda ctx: self.清單(ctx, 7)
-        team_fight_converse.add_reaction_list('t1', a, emoji='🧡')
-        team_fight_converse.add_reaction_list('t2', t('team_fight2'), emoji='💛')
-        team_fight_converse.add_reaction_list('t3', t('team_fight2'), emoji='💚')
-        converse_module = self.bot.get_cog('converse')
-        converse_module.imoport_reaction_list(self._name, team_fight_converse)
+        """ 按鈕對話清單 """
+        # TODO: 清單畫面顯示相關設定、功能說明，並以反應表情觸發選項，該選項可觸發特定函式或回覆對話
+        pass
+        # from addons import reaction
+        # converse_module = self.bot.get_cog('converse')
+        # team_fight_converse = reaction.Reaction()
+        # def t(t):
+        #     async def a(ctx):
+        #         await self.bot.get_channel(ctx.channel_id).send(t)
+        #     return a
+        # def show_default(name):
+        #     if name == 'king_hp_default':
+        #         async def a(ctx):
+        #             await self.bot.get_channel(ctx.channel_id).send(king_hp_default)
+        #         return a
+        # a = lambda ctx: self.清單(ctx, 7)
+        # b = lambda ctx: self._load_setting()
+        # team_fight_converse.add_reaction_list('t1', a)
+        # team_fight_converse.add_reaction_list('t2', show_default('king_hp_default'))
+        # team_fight_converse.add_reaction_list('t3', b)
+        # team_fight_converse.add_reaction_list('t4', t('team_fight2'))
+
+        # team_fight_converse_02 = reaction.Reaction()
+        # team_fight_converse_02.header = king_hp_default
+        # team_fight_converse_02.add_reaction_list('edit', t('edit'))
+        # team_fight_converse_02.add_reaction_list('delete', t('delete'))
+        # converse_module.reaction_list.append(team_fight_converse_02)
+        # team_fight_converse.add_reaction_list(f'**`king_hp_default`**', team_fight_converse_02.edit_reaction_list(team_fight_converse, True))
+        
+        # converse_module.imoport_reaction_list(self._name, team_fight_converse)
 
     """ ----------------- 重啟清單比對 -----------------"""
 
