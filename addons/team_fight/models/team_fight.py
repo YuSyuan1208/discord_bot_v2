@@ -872,7 +872,12 @@ class team_fight(model.Cog_Extension):
             # TODO:該刀為補償
             info .update({'ol':1})
         king = tea_fig_KingIndexToKey(All_OutKnife_Data[1], king_index)
-        force_week = All_OutKnife_Data[week][king]['資訊']['week']
+        king_week = All_OutKnife_Data[week][king]['資訊']['week']
+        king_week_list = tea_fig_get_king_week_list()
+        for i in king_week_list:
+            if king_week - i > 2:
+                await ctx.send(f'{king_week}周{king}周數大於最低周數2周，無法進刀')
+                return 
         SignUp_List = All_OutKnife_Data[week][king]['報名列表']
         index = tea_fig_list_check(SignUp_List, f'<@!{author_id}>')
         overflow_List = All_OutKnife_Data[week]['補償清單']['報名列表']
@@ -885,7 +890,7 @@ class team_fight(model.Cog_Extension):
             await self.報名(ctx, 7)
         else:
             if len(msg) == 1:
-                context = f'尚未報名{force_week}周{king}清單'
+                context = f'尚未報名{king_week}周{king}清單'
             else:
                 context = f'尚未報名補償清單'
             await ctx.send(context)
@@ -954,7 +959,7 @@ class team_fight(model.Cog_Extension):
             await ctx.send(f'{content}下來啦，是要在樹上多久!')
     """ ----------------- 出刀相關指令 -----------------"""
 
-    """ ----------------- 週數 -----------------"""
+    """ ----------------- 周數 -----------------"""
     @commands.command()
     async def 當周(self, ctx):
         force_week = now['force_week']
@@ -1018,7 +1023,7 @@ class team_fight(model.Cog_Extension):
             # await self.切換周(ctx,week)
             return 0
         await ctx.send('區間請小於5') """
-    """ ----------------- 週數 -----------------"""
+    """ ----------------- 周數 -----------------"""
 
     """ ----------------- 王數 -----------------"""
     @commands.command()
@@ -1897,3 +1902,11 @@ def event_number_insert(payload):
         else:
             content = f'{old_content}{number_index}'
         return f'{default_content}:{content}'
+
+def tea_fig_get_king_week_list():
+    week = now['周']
+    king_week_list = []
+    for king in All_OutKnife_Data[week]:
+        if 'week' in All_OutKnife_Data[week][king]['資訊']:
+            king_week_list.append( All_OutKnife_Data[week][king]['資訊']['week'])
+    return king_week_list
