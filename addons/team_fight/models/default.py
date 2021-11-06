@@ -5,11 +5,11 @@ CHANNEL_DEFAULT = {
 }
 OVERFLOW_DEFAULT = {"資訊": {"header": "", "footer": "", "hp": 90}, "報名列表": []}
 REPORT_DAMAGE_DEFAULT = {"資訊": {"header": "", "footer": "", "hp": 90}, "報名列表": []}
-ALL_OUT_KNIFE_DATA_DEFAULT = {1: {'1王': {'資訊': {"header": "", "footer": "", "hp": 600}, '報名列表': []},
-                            '2王': {'資訊': {"header": "", "footer": "", "hp": 800}, '報名列表': []},
-                            '3王': {'資訊': {"header": "", "footer": "", "hp": 1000}, '報名列表': []},
-                            '4王': {'資訊': {"header": "", "footer": "", "hp": 1200}, '報名列表': []},
-                            '5王': {'資訊': {"header": "", "footer": "", "hp": 1500}, '報名列表': []},
+ALL_OUT_KNIFE_DATA_DEFAULT = {1: {'1王': {'資訊': {"header": "", "footer": "", "hp": 600, "week":1}, '報名列表': []},
+                            '2王': {'資訊': {"header": "", "footer": "", "hp": 800, "week":1}, '報名列表': []},
+                            '3王': {'資訊': {"header": "", "footer": "", "hp": 1000, "week":1}, '報名列表': []},
+                            '4王': {'資訊': {"header": "", "footer": "", "hp": 1200, "week":1}, '報名列表': []},
+                            '5王': {'資訊': {"header": "", "footer": "", "hp": 1500, "week":1}, '報名列表': []},
                             '補償清單': OVERFLOW_DEFAULT,
                             '出刀清單': REPORT_DAMAGE_DEFAULT}}
 NOW_DEFAULT = {'周': 1, '王': 1, 'limit_max_week': 10, 'force_week': 1}

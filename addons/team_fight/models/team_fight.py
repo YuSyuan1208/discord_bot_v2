@@ -222,7 +222,13 @@ class team_fight(model.Cog_Extension):
                         # msg_tip.append(await run_channel.send(content=f'{week_tmp}周'))
                         oo_week_wmp = week_tmp
                     for i in msg_embeds:
-                        king_tmp = i.author.name.split(' ')[0]
+                        king_week = False
+                        king_tmp_list = i.author.name.split(' ')
+                        if len(king_tmp_list) > 1:
+                            king_tmp = king_tmp_list[1]
+                            king_week = int(king_tmp_list[0].replace('周', ''))
+                        else:
+                            king_tmp = king_tmp_list[0]
                         # print(king_tmp) #i.author.name 王,hp
                         sys_list_tmp = All_OutKnife_Data[week_tmp][king_tmp]['報名列表']
                         sys_list_len = len(sys_list_tmp)
@@ -237,6 +243,8 @@ class team_fight(model.Cog_Extension):
                             All_OutKnife_Data[week_tmp][king_tmp]['資訊']['header'] = dc_description
                         # hp
                         if king_tmp not in ['補償清單', '出刀清單']:
+                            # 載入周
+                            All_OutKnife_Data[week_tmp][king_tmp]['資訊']['week'] = king_week
                             dc_footer = i.footer.text
                             # print(dc_footer)
                             dc_hp = dc_footer.split(':')[1].replace('W', '')
@@ -263,6 +271,10 @@ class team_fight(model.Cog_Extension):
                             dc_damage = tmp_tmp[0]
                             tree = 1 if '[掛樹]' in i2.name else False
                             ol = 1 if '[補償]' in i2.name else False
+                            in_king = False
+                            in_king_len = i2.name.split(' ')
+                            if len(in_king_len) > 1:
+                                in_king = in_king_len[1]
 
                             # print(dc_id,dc_damage)
                             if(no < sys_list_len):
@@ -288,6 +300,8 @@ class team_fight(model.Cog_Extension):
                                     sys_list_tmp[l]["tree"] = 1
                                 if ol:
                                     sys_list_tmp[l]["ol"] = 1
+                                if in_king:
+                                    sys_list_tmp[l]["in_king"] = in_king
                             no += 1
                     if(list_changed_content):
                         change_content_list.append(list_changed_content)
@@ -498,7 +512,8 @@ class team_fight(model.Cog_Extension):
                         In_SignUp_List[in_index[0]]['進場'] += 1
                         await self.meme_edit(ctx, week, now['王'], meme_in_index)
                 else:
-                    send_msg = f'<@!{author_id}>{force_week}周{tmp[0]}報名成功٩( >ω< )وو, 目前人數: {l+1} {delete_msg}'
+                    king_week = All_OutKnife_Data[week][tmp[0]]["資訊"]["week"]
+                    send_msg = f'<@!{author_id}>{king_week}周{tmp[0]}報名成功٩( >ω< )وو, 目前人數: {l+1} {delete_msg}'
                     await ctx.send(send_msg, delete_after=delete_after)
                     if(run_out_before_look):
                         channel2 = self.bot.get_channel(run_out_before_look)
@@ -519,7 +534,8 @@ class team_fight(model.Cog_Extension):
                       brief="Answers from the beyond.",
                       aliases=['取消', 'r', 'recall'])
     async def 取消報名(self, ctx, *msg):
-        force_week = now['force_week']
+        # force_week = now['force_week']
+        force_week = ''
         if(str(type(ctx)) == "<class 'discord.channel.TextChannel'>"):
             channel_id = ctx.id
             author_id = msg[3]
@@ -559,6 +575,8 @@ class team_fight(model.Cog_Extension):
                 print("meme_edit para fail")
 
             SignUp_List = All_OutKnife_Data[week][tmp[0]]["報名列表"]
+            if 'week' in All_OutKnife_Data[week][tmp[0]]["資訊"]:
+                force_week = str(All_OutKnife_Data[week][tmp[0]]["資訊"]['week']) + '周'
             # if(len(tmp) > 1):
             in_id = int(tmp[1])
             list_len = len(SignUp_List)
@@ -569,7 +587,7 @@ class team_fight(model.Cog_Extension):
                 #    if(v["id"] == f'{in_id}'):
                 if(list_len >= in_id):
                     All_OutKnife_Data[week][tmp[0]]["報名列表"].pop(in_id-1)
-                    await ctx.send(f'<@!{author_id}>取消報名{force_week}周{tmp[0]}大成功٩(ˊᗜˋ*)و{delete_msg}', delete_after=delete_after)
+                    await ctx.send(f'<@!{author_id}>取消報名{force_week}{tmp[0]}大成功٩(ˊᗜˋ*)و{delete_msg}', delete_after=delete_after)
                     if(week <= now['周'] + 2):
                         # print('meme_edit')
                         await self.meme_edit(ctx, week, meme_king, meme_index)
@@ -835,34 +853,49 @@ class team_fight(model.Cog_Extension):
     """ ----------------- 出刀相關指令 -----------------"""
     @commands.command(name='進刀',
                       aliases=['in'])
-    async def 進刀(self, ctx):
+    async def 進刀(self, ctx, *msg):
         channel_id = ctx.channel.id
         author_id = ctx.author.id
         ''' 權限 '''
         if(limit_enable):
             if (channel_id not in [run_out_before_look]):
                 return 0
+        
         week = now['周']
-        king_index = now['王']
-        force_week = now['force_week']
+        # king_index = now['王']
+        # 進那一王
+        _logger.debug(msg)
+        _logger.debug(len(msg))
+        king_index = int(msg[0])
+        info = {}
+        if len(msg) > 1:
+            # TODO:該刀為補償
+            info .update({'ol':1})
         king = tea_fig_KingIndexToKey(All_OutKnife_Data[1], king_index)
+        force_week = All_OutKnife_Data[week][king]['資訊']['week']
         SignUp_List = All_OutKnife_Data[week][king]['報名列表']
         index = tea_fig_list_check(SignUp_List, f'<@!{author_id}>')
         overflow_List = All_OutKnife_Data[week]['補償清單']['報名列表']
         overflow_index = tea_fig_list_check(overflow_List, f'<@!{author_id}>')
         SignUp_List_tmp = All_OutKnife_Data[week]['出刀清單']["報名列表"]
         # 查找補償清單、報名清單
-        if len(overflow_index) > 0:
+        if len(overflow_index) > 0 and len(msg) > 1:
             await self.報名(ctx, 7)
-            info = {'ol':1}
-            tea_fig_enter_info_change(SignUp_List_tmp, author_id, info)
-            in_king = 7
-            meme_index = (week - now['周']) * list_refresh_king + in_king - 1
-            await self.meme_edit(ctx, week, in_king, meme_index)
-        elif len(index) > 0:
+        elif len(index) > 0 and len(msg) == 1:
             await self.報名(ctx, 7)
         else:
-            await ctx.send(f'尚未報名{force_week}周{king}清單')
+            if len(msg) == 1:
+                context = f'尚未報名{force_week}周{king}清單'
+            else:
+                context = f'尚未報名補償清單'
+            await ctx.send(context)
+            return 
+        # 進刀的王
+        info.update({'in_king':king})
+        tea_fig_enter_info_change(SignUp_List_tmp, author_id, info)
+        re_king = 7
+        meme_index = (week - now['周']) * list_refresh_king + re_king - 1
+        await self.meme_edit(ctx, week, re_king, meme_index)
 
     @commands.command(name='回報',
                       aliases=['re'])
@@ -1013,22 +1046,26 @@ class team_fight(model.Cog_Extension):
                     tmp_id = tmp_id.replace(i, '')
                 author_id = int(tmp_id)
         send_msg = ''
-        king = now['王']
+        # king = now['王']
         week = now['周']
-
-        # 清單人員比對
-        user_index = 0
-        damage = 0
-        # try:
-        msg_index = [
-            msg_index for msg_index in list_msg_tmp if list_msg_tmp_id[king-1] in [msg_index[2].id]][0]
-        week_data = msg_index[0]
-        king_data = tea_fig_KingIndexToKey(
-            All_OutKnife_Data[1], msg_index[1])
 
         # 出刀清單找尋
         rd_index = tea_fig_list_check(All_OutKnife_Data[week]['出刀清單']['報名列表'], f'<@!{author_id}>')
         if len(rd_index) > 0:
+
+            # 清單人員比對
+            if 'in_king' in All_OutKnife_Data[week]['出刀清單']['報名列表'][rd_index[0]]:
+                in_king = All_OutKnife_Data[week]['出刀清單']['報名列表'][rd_index[0]]['in_king']
+                king = tea_fig_KeyToKingIndex(All_OutKnife_Data[1], in_king)
+            user_index = 0
+            damage = 0
+            # try:
+            msg_index = [
+                msg_index for msg_index in list_msg_tmp if list_msg_tmp_id[king-1] in [msg_index[2].id]][0]
+            week_data = msg_index[0]
+            king_data = tea_fig_KingIndexToKey(
+                All_OutKnife_Data[1], msg_index[1])
+
             if 'ol' in All_OutKnife_Data[week]['出刀清單']['報名列表'][rd_index[0]]:
                 try:
                     ol_index = tea_fig_list_check(All_OutKnife_Data[week]['補償清單']['報名列表'], f'<@!{author_id}>')
@@ -1052,6 +1089,7 @@ class team_fight(model.Cog_Extension):
                     else:
                         break """
         else:
+            await ctx.send('你不在出刀清單中喔(๑•́︿•̀๑)')
             return 0
         # except:
         #     print(sys.exc_info()[0])
@@ -1065,36 +1103,38 @@ class team_fight(model.Cog_Extension):
         All_OutKnife_Data[week_data][king_data]["資訊"]["hp"] = now_king_left_hp
         meme_index = (week - now['周']) * list_refresh_king + king - 1
         await self.meme_edit(ctx, week, king, meme_index)
-        # TODO: 出刀清單 取消
         await self.取消報名(ctx, 7, rd_index+1, week, author_id)
         if now_king_left_hp > 0:
             return 0
 
         # 跳下一隻王
-        king += 1
+        # king += 1
         # 清除出刀清單
         # print('清除出刀清單')
         await self.掛樹清單(ctx, flag=False)
-        tea_fig_cut_out_list_del()
+        tea_fig_cut_out_list_del(king_data)
         cut_out_list_index = 7
         meme_index = (week - now['周']) * list_refresh_king + cut_out_list_index - 1
         await self.meme_edit(ctx, week, cut_out_list_index, meme_index)
         change_week_ea = False
-        if(king > 5):
-            king = 1
-            week_tmp = now['force_week']
-            week_tmp += 1
-            now['force_week'] = week_tmp
-            change_week_ea = True
+        # 該王跳下周
+        All_OutKnife_Data[week_data][king_data]["資訊"]["week"] += 1
+        # if(king > 5):
+        #     king = 1
+        #     week_tmp = now['force_week']
+        #     week_tmp += 1
+        #     now['force_week'] = week_tmp
+        #     change_week_ea = True
         now['王'] = king
         meme_index = (week - now['周']) * list_refresh_king + king - 1
         force_week = now['force_week']
         king_key = tea_fig_KingIndexToKey(All_OutKnife_Data[week], king)
+        king_week = All_OutKnife_Data[week][king_key]["資訊"]["week"]
         All_OutKnife_Data[week][king_key]["資訊"]["hp"] = tea_fig_get_king_hp(
             force_week, king)
         SignUp_List = All_OutKnife_Data[week][king_key]["報名列表"]
         over_id = All_OutKnife_Data[week][king_key]["資訊"]["header"]
-        send_msg += f'{force_week}周{king_key}出了'
+        send_msg += f'{king_week}周{king_key}出了'
         try:
             send_msg += f'，{over_id}補償先進去'
         except:
@@ -1102,12 +1142,12 @@ class team_fight(model.Cog_Extension):
         send_msg += f'\n其餘完整刀準備(´﹀`)'
 
         """ 呼叫、進場判定 """
-        overflow_SignUp_List = All_OutKnife_Data[week]["補償清單"]["報名列表"]
+        # overflow_SignUp_List = All_OutKnife_Data[week]["補償清單"]["報名列表"]
         del_list = []
         tmp_index = 1
         for v in SignUp_List:
-            if len(tea_fig_list_check(overflow_SignUp_List, v["id"])) > 0:
-                continue
+            # if len(tea_fig_list_check(overflow_SignUp_List, v["id"])) > 0:
+            #     continue
             if tmp_index > king_enter_call_max:
                 break
             tmp_id = v['id']
@@ -1138,6 +1178,7 @@ class team_fight(model.Cog_Extension):
         # channel2 = self.bot.get_channel(tea_fig_channel)
         # await channel2.send(send_msg)
 
+    # 取消使用
     @commands.command()
     async def 切換王(self, ctx, msg):
         channel_id = ctx.channel.id
@@ -1151,7 +1192,7 @@ class team_fight(model.Cog_Extension):
         king = int(msg)
         now['王'] = king
         week = now['周']
-        tea_fig_cut_out_list_del()
+        # tea_fig_cut_out_list_del()
         cut_out_list_index = 7
         meme_index = (week - now['周']) * list_refresh_king + cut_out_list_index - 1
         await self.meme_edit(ctx, week, cut_out_list_index, meme_index)
@@ -1618,6 +1659,7 @@ class team_fight(model.Cog_Extension):
                     continue
                 number_insert_msg = [k, week]
                 tmp = tea_fig_list_func(number_insert_msg)
+                # await ctx.send(embed=tmp[0])
                 s_msg = await ctx.send(embed=tmp[1])
                 if(k != '出刀清單'):
                     await s_msg.add_reaction(sign_up_emoji)
@@ -1702,7 +1744,7 @@ def tea_fig_list_func(msg):
     img_url = ""
     unit = ""
     embed_color = 0
-    week_str = f'```{week}周```'
+    # week_str = f'{week}周'
     king = now['王']
     king_str = f'```{king}王```'
     try:
@@ -1721,6 +1763,8 @@ def tea_fig_list_func(msg):
         damage_info = f'{tea_fig_get_king_hp(now["force_week"], king_index)}'
         left_hp = f'{All_OutKnife_Data[week][msg]["資訊"]["hp"]}'
         header_info = All_OutKnife_Data[week][msg]["資訊"]["header"]
+        week_str = All_OutKnife_Data[week][msg]["資訊"]["week"]
+        
         # remaining = 1  # int(damage_info) - tea_fig_PlusAllDamage(SignUp_List)
         # if(remaining > 0):
         footer_info = f'預估剩餘血量:{left_hp}{unit}'
@@ -1731,7 +1775,7 @@ def tea_fig_list_func(msg):
         # elif(remaining <= 0):
         #     footer_info = ""  # f'預估剩餘:{remaining}{unit}, 報名已截止'
         #     embed_color = embed_color_list["不可報"]
-        set_author_name = f'{msg} {damage_info}{unit}'
+        set_author_name = f'{week_str}周 {msg} {damage_info}{unit}'
     elif(msg == "補償清單"):
         damage_info = ""
         header_info = ""
@@ -1754,20 +1798,21 @@ def tea_fig_list_func(msg):
     for k2 in SignUp_List:
         remark = "- " + k2["備註"] if "備註" in k2 else ''
         tree = " [掛樹]" if "tree" in k2 else ''
-        ol = " [補償]" if "ol" in k2 else ''
+        ol = "[補償]" if "ol" in k2 else ''
+        in_king = k2['in_king'] if "in_king" in k2 else ''
         if(msg == "補償清單"):
             embed.add_field(
                 name=f'No.{n}', value=f'{k2["id"]} {k2["傷害"]}{unit}', inline=False)
         elif(msg == "出刀清單"):
             embed.add_field(
-                name=f'No.{n}{ol}{tree}', value=f'{k2["id"]} {k2["傷害"]}{unit}{remark}', inline=False)
+                name=f'No.{n}{ol} {in_king} {tree}', value=f'{k2["id"]} {k2["傷害"]}{unit}{remark}', inline=False)
         else:
             embed.add_field(
                 name=f'No.{n}', value=f'{k2["id"]} {k2["傷害"]}{unit},{k2["呼叫"]},{k2["進場"]}', inline=False)
         n = n+1
     embed.set_footer(text=footer_info)
     # await ctx.send(f'```{week}周```')
-    return [f'{week_str}', embed]
+    return ['', embed]
 
 
 def tea_fig_get_king_hp(week, king):
@@ -1819,11 +1864,14 @@ def tea_fig_cut_out_list_sort():
         cut_out_SignUp_List, key=lambda x: x['index'] if 'index' in x else 999)
 
 
-def tea_fig_cut_out_list_del():
+def tea_fig_cut_out_list_del(king_str):
+    # TODO: 僅完成出刀的王清除
     week = now['周']
+    clear_list = []
     cut_out_SignUp_List = All_OutKnife_Data[week]['出刀清單']['報名列表']
-    cut_out_SignUp_List.clear()
-
+    for d in cut_out_SignUp_List:
+        if d['in_king'] == king_str:
+            cut_out_SignUp_List.remove(d)
 
 def event_number_insert(payload):
     """ 按鍵數字輸入 """

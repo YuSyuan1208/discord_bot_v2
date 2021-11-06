@@ -164,6 +164,10 @@ def tea_fig_KingIndexToKey(King_List, msg):
         msg = msg
     return msg
 
+def tea_fig_KeyToKingIndex(King_List, msg):
+    """ 轉換(1~5)王->數字 """
+    key_list = [k for k in King_List.keys()]
+    return key_list.index(msg) + 1
 
 def now_save():
     now_data_file.write_file_data(f'{now}')
