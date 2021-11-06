@@ -27,7 +27,7 @@ class converse(model.Cog_Extension):
         def t(t):
             async def a(ctx):
                 print(t)
-                await ctx.send(t)
+                await self.bot.get_channel(ctx.channel_id).send(t)
             return a
         re.add_reaction_list('test11', t('test11'), emoji='🧡')
         re.add_reaction_list('test12', t('test12'), emoji='💛')

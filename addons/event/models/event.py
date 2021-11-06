@@ -26,23 +26,23 @@ class event(model.Cog_Extension):
         await super().on_ready()
         # _logger.debug('event on_ready')
 
-    # @commands.Cog.listener()
-    # async def on_message(self, msg):
-    #     channel_id = msg.channel.id
-    #     author_id = msg.author.id
-    #     content = msg.content
-    #     msg_id = msg.id
-    #     attachments = msg.attachments
-    #     # print('ch_id:', channel_id, 'msg_id:', msg_id, 'aut_id:', author_id, 'con:', content, 'attach:', attachments)
-    #     if attachments and msg.author != self.bot.user:
-    #         file = attachments[0]
-    #         file.filename = f"test_{file.filename}"
-    #         spoiler = await file.to_file()
-    #         await msg.channel.send(file=spoiler)
-    #     """ if(msg.content == "check_channel_id"):
-    #         print(f'Dc_msg: {msg.channel.id}')
-    #     if msg.content == '<:MeMe:616147400792342538>' and msg.author != self.bot.user:
-    #         await msg.channel.send('<:MeMe:616147400792342538>') """ 
+    @commands.Cog.listener()
+    async def on_message(self, msg):
+        channel_id = msg.channel.id
+        author_id = msg.author.id
+        content = msg.content
+        msg_id = msg.id
+        attachments = msg.attachments
+        # print('ch_id:', channel_id, 'msg_id:', msg_id, 'aut_id:', author_id, 'con:', content, 'attach:', attachments)
+        # if attachments and msg.author != self.bot.user:
+        #     file = attachments[0]
+        #     file.filename = f"test_{file.filename}"
+        #     spoiler = await file.to_file()
+        #     await msg.channel.send(file=spoiler)
+        """ if(msg.content == "check_channel_id"):
+            print(f'Dc_msg: {msg.channel.id}')
+        if msg.content == '<:MeMe:616147400792342538>' and msg.author != self.bot.user:
+            await msg.channel.send('<:MeMe:616147400792342538>') """ 
 
     @commands.command()
     async def cleartest(self, ctx, number):
@@ -56,7 +56,7 @@ class event(model.Cog_Extension):
             mgs.append(message)
         for m in mgs:
             print(m.content)
-        # await channel.delete_messages(mgs)
+        await channel.delete_messages(mgs)
 
     @commands.command()
     async def event_test(self, ctx):
@@ -67,6 +67,30 @@ class event(model.Cog_Extension):
     @commands.command()
     async def event_test2(self, ctx):
         await ctx.send('test!')
+
+    @commands.command()
+    async def get_all_cogs(self, ctx):
+        await ctx.send(self.bot.cogs)
+
+    @commands.command()
+    async def get_members(self, ctx):
+        # 573893554577866777 窩們一起學牛叫：O
+        # <@&750720404213203079> @美美管理員
+        #
+        # 727170387091259393 功德無量
+        # 734391146910056478 @TEST
+        server = ctx.bot.get_guild(727170387091259393)
+        print(server)
+        print(ctx.guild)
+        role = ctx.guild.get_role(734391146910056478)
+        member_ids = [member for member in role.members]
+        print(member_ids)
+        # return member_ids
+
+    @commands.command()
+    async def get_info(self, ctx):
+        print(await ctx.bot.application_info())
+        print(ctx.bot.owner_id())
 
     @commands.command()
     async def get_msg_id(self, ctx, number):
