@@ -21,9 +21,9 @@ class Cog_Extension(commands.Cog):
 
     async def on_ready(self):
         _logger.info(self._name + ' on_ready.')
-        # await self._get_message_setting()
+        await self._load_setting()
 
-    async def reload_setting(self, ctx):
+    async def _load_setting(self):
         await self._get_message_setting()
 
     def __init__(self, bot):
