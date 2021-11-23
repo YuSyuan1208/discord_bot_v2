@@ -379,30 +379,43 @@ class team_fight(model.Cog_Extension):
     """ ----------------- 重啟清單比對 -----------------"""
 
     """ ----------------- 戰隊戰 help -----------------"""
-    """ @commands.command()
-    async def 戰隊戰(self, ctx):
+    @commands.command(aliases=['ta'])
+    async def 戰隊戰指令說明(self, ctx):
         # TODO: 戰隊戰指令說明
         embed = discord.Embed(
-            title="戰隊戰專用指令", description="英文指令不區分大小寫", color=0x99d8ff)
+            title="戰隊戰專用指令", description="英文指令不區分大小寫，<>為必填，[]可選填，1~5:王、6:補償清單、7:出刀清單", color=0x99d8ff)
         embed.add_field(
-            name="查看排隊狀況", value="*清單 / *List / *L / *List 1 ", inline=False)
-        embed.add_field(name="查看單隻王排隊狀況 （Ex: 搜尋 1 1 5）<指令 王 周目 周目>",
-                        value="*搜尋 / *Search / *s", inline=False)
-        embed.add_field(name="報名/喊刀（Ex: 報名 1 300 1）<指令 王 傷害 周目>",
-                        value="*報名 / *Enter / *e", inline=False)
-        embed.add_field(name="更改預估傷害 （Ex: 更改 1 1 400 1）<指令 王 排序 傷害 周目>",
-                        value="*更改 / *change / *c", inline=True)
-        embed.add_field(name="取消報名出刀 （Ex: 取消 1 1 1 ）<指令 王 排序 周目 >",
-                        value="*取消 / *取消報名 / *recall / *r", inline=False)
-        embed.add_field(name="補償排程 （Ex: 補償 1 30 2）<指令 王 秒數 周目>",
-                        value="*補償 / *Overflow / *o", inline=True)
+            name="查看清單排隊狀況", value="*L <王(1~5)>，EX. *l 1", inline=False)
+        # embed.add_field(name="查看單隻王排隊狀況 （Ex: 搜尋 1 1 5）<指令 王 周目 周目>",
+        #                 value="*搜尋 / *Search / *s", inline=False)
+        # embed.add_field(name="報名/喊刀（Ex: 報名 1 300）<指令 王 傷害 周目>",
+        #                 value="*報名 / *Enter / *e", inline=False)
+        # embed.add_field(name="更改預估傷害 （Ex: 更改 1 1 400 1）<指令 王 排序 傷害 周目>",
+        #                 value="*更改 / *change / *c", inline=True)
+        embed.add_field(name="進場指令" ,
+                        value="*in <王(1~5)> [補償請輸入1]，EX. *in 1，1王進場、*in 1 1，1王補償進場", inline=False)
+        embed.add_field(name="回報傷害，重複回報可覆蓋前次回報數值" ,
+                        value="*re <傷害> [備註可輸入中文]，EX. *re 1000、*re 800 2秒", inline=False)
+        embed.add_field(name="出刀指令",
+                        value="*f", inline=False)
+        embed.add_field(name="-----------",
+                         value="-----------", inline=False)
+        embed.add_field(name="管理者可用指令" ,
+                         value="須持有管理者權限、或美美管理員", inline=False)
+        embed.add_field(name="取消清單報名" ,
+                        value="*r <清單(1~7)> <NO.(排序)>，EX. *r 1 1", inline=False)
+        embed.add_field(name="切換周" ,
+                        value="*切換周 <周(數字)> <王>，EX. *切換周 10 1，切換10周1王", inline=False)
+        embed.add_field(name="血量變更" ,
+                        value="*ch <血量(數字)> <王>，EX. *ch 999 1，1王血量變更999", inline=False)
+        # embed.add_field(name="補償排程 （Ex: 補償 1 30 2）<指令 王 秒數 周目>",
+        #                 value="*補償 / *Overflow / *o", inline=True)
         # embed.add_field(name="切換周目（Ex: 切換周 1）<指令 周目>", value="切換周", inline=False)
-        embed.add_field(name="尾刀員指令 （Ex:）",
-                        value="*收 / *Finish / *f", inline=False)
-        embed.add_field(name="顯示 目前周 目前王", value="*當周 *當王", inline=True)
-        embed.add_field(name="*", value="未輸入 周目 皆為 當周", inline=False)
-        embed.set_footer(text="管理員可取消其他人的報名及刪除列表")
-        await ctx.send(embed=embed) """
+
+        # embed.add_field(name="顯示 目前周 目前王", value="*當周 *當王", inline=True)
+        # embed.add_field(name="*", value="未輸入 周目 皆為 當周", inline=False)
+        # embed.set_footer(text="管理員可取消其他人的報名及刪除列表")
+        await ctx.send(embed=embed)
     """ ----------------- 戰隊戰 help -----------------"""
 
     """ ----------------- 報名相關指令 -----------------"""
@@ -947,14 +960,16 @@ class team_fight(model.Cog_Extension):
             await ctx.send(f'<@!{author_id}>尚未進刀，請輸入*in進場')
 
     @commands.command(name='掛樹清單', aliases=['tl'])
-    async def 掛樹清單(self, ctx, flag=True):
+    async def 掛樹清單(self, ctx, msg, flag=True):
         author_id = ctx.author.id
         if (admin_check(author_id, self.bot, self) != True) and flag:
             return False
+        king = tea_fig_KingIndexToKey(All_OutKnife_Data[1], msg)
         SignUp_List = ReportDamage['報名列表']
         content = ''
         for i in SignUp_List:
-            content += f' {i["id"]}'
+            if king == i["in_king"]:
+                content += f' {i["id"]}'
         if content:
             await ctx.send(f'{content}下來啦，是要在樹上多久!')
     """ ----------------- 出刀相關指令 -----------------"""
@@ -982,7 +997,7 @@ class team_fight(model.Cog_Extension):
         # await ctx.send(f'```{week}周```') '''
 
     @commands.command()
-    async def 切換周(self, ctx, msg):
+    async def 切換周(self, ctx, week, king):
         # 只切換force_week
         channel_id = ctx.channel.id
         author_id = ctx.author.id
@@ -991,13 +1006,17 @@ class team_fight(model.Cog_Extension):
             if(limit_enable):
                 if (channel_id not in [tea_fig_channel]):
                     return 0
-        week = now['force_week']
-        week = int(msg)
-        now['force_week'] = week
+        # week = now['force_week']
+        # week = int(msg)
+        # now['force_week'] = week
+        meme_index = (now['周'] - now['周']) * list_refresh_king + int(king) - 1
+        king = tea_fig_KingIndexToKey(All_OutKnife_Data[1], king)
+        All_OutKnife_Data[1][king]['資訊']['week'] = int(week)
         await ctx.send(f'切換周成功')
         await self.now輸出(ctx)
-        await self.now_edit(ctx)
-        await self.meme_edit(ctx, 'all')
+        # await self.now_edit(ctx)
+        # await self.meme_edit(ctx, 'all')
+        await self.meme_edit(ctx, now['周'], king, meme_index)
 
     """ @commands.command(name='看王',
                       # description="Answers a yes/no question.",
@@ -1116,7 +1135,7 @@ class team_fight(model.Cog_Extension):
         # king += 1
         # 清除出刀清單
         # print('清除出刀清單')
-        await self.掛樹清單(ctx, flag=False)
+        await self.掛樹清單(ctx, king_data, flag=False)
         tea_fig_cut_out_list_del(king_data)
         cut_out_list_index = 7
         meme_index = (week - now['周']) * list_refresh_king + cut_out_list_index - 1
@@ -1175,7 +1194,7 @@ class team_fight(model.Cog_Extension):
         await ctx.send(send_msg)
         await self.data輸出(ctx)
         await self.now輸出(ctx)
-        await self.now_edit(ctx)
+        # await self.now_edit(ctx)
         await self.meme_edit(ctx, week, king_key, meme_index)
         if(change_week_ea):
             await self.清單(ctx, 6)
@@ -1184,7 +1203,7 @@ class team_fight(model.Cog_Extension):
         # await channel2.send(send_msg)
 
     # 取消使用
-    @commands.command()
+    # @commands.command()
     async def 切換王(self, ctx, msg):
         channel_id = ctx.channel.id
         author_id = ctx.author.id
@@ -1203,7 +1222,7 @@ class team_fight(model.Cog_Extension):
         await self.meme_edit(ctx, week, cut_out_list_index, meme_index)
         await ctx.send(f'切換王成功')
         await self.now輸出(ctx)
-        await self.now_edit(ctx)
+        # await self.now_edit(ctx)
 
     """ ----------------- 王數 -----------------"""
     @commands.command()
@@ -1218,7 +1237,7 @@ class team_fight(model.Cog_Extension):
     async def now輸出(self, ctx):
         now_save()
 
-    @commands.command()
+    # @commands.command()
     async def now_print(self, ctx):
         author_id = ctx.author.id
         ''' 權限 '''
@@ -1233,7 +1252,7 @@ class team_fight(model.Cog_Extension):
         await self.now輸出(ctx)
         await self.now_edit(ctx)
 
-    @commands.command()
+    # @commands.command()
     async def now_edit(self, ctx):
         week = now['force_week']
         king = now['王']
@@ -1306,15 +1325,15 @@ class team_fight(model.Cog_Extension):
                       brief="Answers from the beyond.",
                       aliases=['ch'],
                       )
-    async def 血量變更(self, ctx, msg):
+    async def 血量變更(self, ctx, hp, king):
         author_id = ctx.author.id
         if(admin_check(author_id, self.bot, self) != True):
             return 0
         week = now["周"]
-        force_week = now["force_week"]
-        king = now['王']
+        king = int(king)
         king_key = tea_fig_KingIndexToKey(All_OutKnife_Data[1], king)
-        All_OutKnife_Data[week][king_key]["資訊"]["hp"] = int(msg)
+        force_week = All_OutKnife_Data[week][king_key]["資訊"]["week"]
+        All_OutKnife_Data[week][king_key]["資訊"]["hp"] = int(hp)
         await ctx.send(f'{force_week}周{king_key}血量變更成功!')
         meme_index = (week - now['周']) * list_refresh_king + king - 1
         await self.meme_edit(ctx, week, king_key, meme_index)
@@ -1614,8 +1633,10 @@ class team_fight(model.Cog_Extension):
                       description="Answers a yes/no question.",
                       brief="Answers from the beyond.")
     async def test(self, ctx):
-        await self.admin_check()
-        print(self._set_default['manage'])
+        pass
+        # await self.admin_check()
+        # print(All_OutKnife_Data)
+        # print(data_file.get_file_data())
         # get_role_members(self.bot)
         # await ctx.send(f'<@&734391146910056478>')
         """ print(list_msg_tmp_id)

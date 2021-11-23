@@ -23,7 +23,7 @@ react_data = {}
 all_function_enable = False  # 未使用
 team_fight_list_compare_enable = True  # 重啟清單比對功能
 team_fight_function_enable = True  # 戰隊站功能
-team_fight_data_save_enable = False # 儲存清單資訊到本地端
+team_fight_data_save_enable = False # 儲存清單資訊到本地端，初始值從本地端獲取
 limit_enable = True  # 指令權限
 
 # 預設頻道id
@@ -177,7 +177,8 @@ def now_save():
 
 
 def data_save():
-    data_file.write_file_data(f'{All_OutKnife_Data}')
+    if team_fight_data_save_enable:
+        data_file.write_file_data(f'{All_OutKnife_Data}')
     # f = open(data_data_path, "w")
     # f.write(f'{All_OutKnife_Data}')
     # f.close()
