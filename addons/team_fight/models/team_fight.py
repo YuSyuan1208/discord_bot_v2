@@ -149,51 +149,51 @@ class team_fight(model.Cog_Extension):
                 async for message in only_meme_speak_channel_obj.history(limit=100):
                     msg_objs[message.id] = message
 
-                # [now] get data
+                # [now] get data，取消使用
                 # msg_tip.append(await run_channel.send(content=f'周,王 核對開始'))
-                now_changed_content = ''
-                try:
-                    now_msg[0] = msg_objs[now['msg_id']]
-                    now_tmp = now_msg[0].content.replace('```', '')  # get message
-                    week_dc = int(now_tmp.split('周:')[1].split(',')[0])
-                    king_dc = int(now_tmp.split('王:')[1].split(',')[0])
-                    # limit_dc = int(now_tmp.split('限制周:')[1].split(',')[0])
-                    # msg_tip.append(await run_channel.send(content=f'目前進度, 周:{week_dc}, 王:{king_dc}'))
-                    week_sys = int(now['force_week'])
-                    king_sys = int(now['王'])
-                    limit_sys = int(now['limit_max_week'])
-                    # msg_tip.append(await run_channel.send(content=f'系統進度, 周:{week_sys}, 王:{king_sys}'))
+                # now_changed_content = ''
+                # try:
+                #     now_msg[0] = msg_objs[now['msg_id']]
+                #     now_tmp = now_msg[0].content.replace('```', '')  # get message
+                #     week_dc = int(now_tmp.split('周:')[1].split(',')[0])
+                #     king_dc = int(now_tmp.split('王:')[1].split(',')[0])
+                #     # limit_dc = int(now_tmp.split('限制周:')[1].split(',')[0])
+                #     # msg_tip.append(await run_channel.send(content=f'目前進度, 周:{week_dc}, 王:{king_dc}'))
+                #     week_sys = int(now['force_week'])
+                #     king_sys = int(now['王'])
+                #     limit_sys = int(now['limit_max_week'])
+                #     # msg_tip.append(await run_channel.send(content=f'系統進度, 周:{week_sys}, 王:{king_sys}'))
 
-                    # [now] compare data
-                    # week_tmp = week_dc - int(now['周'])
-                    if (week_dc != week_sys):
-                        now['force_week'] = week_dc
-                        now_changed_content += f'```arm\n周:{week_sys} -> {week_dc}\n```'
-                    # king_tmp = king_dc - int(now['王'])
-                    if (king_dc != king_sys):
-                        now['王'] = king_dc
-                        now_changed_content += f'```arm\n王:{king_sys} -> {king_dc}\n```'
-                    # limit_tmp = limit_dc - int(now['limit_max_week'])
-                    """ if (limit_dc != limit_sys):
-                        now['limit_max_week'] = limit_dc
-                        now_changed_content += f'```arm\n限制周:{limit_sys} -> {limit_dc}\n```' """
-                    if(now_changed_content):
-                        # print (now_changed_content)
-                        change_content_list.append(now_changed_content)
-                        # await run_channel.send(content=now_changed_content)
-                        now_save()
-                    # msg_tip.append(await run_channel.send(content=f'周,王 核對完畢'))
-                except:
-                    error = f'周,王 核對失敗，資料可能遺失'
-                    await run_channel.send(content=error)
-                    # await backup_channel.send(content=error)
+                #     # [now] compare data
+                #     # week_tmp = week_dc - int(now['周'])
+                #     if (week_dc != week_sys):
+                #         now['force_week'] = week_dc
+                #         now_changed_content += f'```arm\n周:{week_sys} -> {week_dc}\n```'
+                #     # king_tmp = king_dc - int(now['王'])
+                #     if (king_dc != king_sys):
+                #         now['王'] = king_dc
+                #         now_changed_content += f'```arm\n王:{king_sys} -> {king_dc}\n```'
+                #     # limit_tmp = limit_dc - int(now['limit_max_week'])
+                #     """ if (limit_dc != limit_sys):
+                #         now['limit_max_week'] = limit_dc
+                #         now_changed_content += f'```arm\n限制周:{limit_sys} -> {limit_dc}\n```' """
+                #     if(now_changed_content):
+                #         # print (now_changed_content)
+                #         change_content_list.append(now_changed_content)
+                #         # await run_channel.send(content=now_changed_content)
+                #         now_save()
+                #     # msg_tip.append(await run_channel.send(content=f'周,王 核對完畢'))
+                # except:
+                #     error = f'周,王 核對失敗，資料可能遺失'
+                #     await run_channel.send(content=error)
+                #     # await backup_channel.send(content=error)
 
-                # [now] backup data
-                if(now_changed_content):
-                    # msg_tip.append(await run_channel.send(content=f'資料有更動，備份中'))
-                    # await backup_channel.send(content=now_changed_content)
-                    # msg_tip.append(await run_channel.send(content=f'備份完成'))
-                    pass
+                # # [now] backup data
+                # if(now_changed_content):
+                #     # msg_tip.append(await run_channel.send(content=f'資料有更動，備份中'))
+                #     # await backup_channel.send(content=now_changed_content)
+                #     # msg_tip.append(await run_channel.send(content=f'備份完成'))
+                #     pass
 
                 ''' list message object '''
                 # [list] get data
