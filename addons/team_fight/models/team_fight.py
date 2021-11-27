@@ -1009,9 +1009,12 @@ class team_fight(model.Cog_Extension):
         # week = now['force_week']
         # week = int(msg)
         # now['force_week'] = week
-        meme_index = (now['周'] - now['周']) * list_refresh_king + int(king) - 1
-        king = tea_fig_KingIndexToKey(All_OutKnife_Data[1], king)
+        int_king = int(king)
+        meme_index = (now['周'] - now['周']) * list_refresh_king + int_king - 1
+        king = tea_fig_KingIndexToKey(All_OutKnife_Data[1], int_king)
         All_OutKnife_Data[1][king]['資訊']['week'] = int(week)
+        All_OutKnife_Data[1][king]["資訊"]["hp"] = tea_fig_get_king_hp(
+            int(week), int_king)
         await ctx.send(f'切換周成功')
         await self.now輸出(ctx)
         # await self.now_edit(ctx)
@@ -1155,7 +1158,7 @@ class team_fight(model.Cog_Extension):
         king_key = tea_fig_KingIndexToKey(All_OutKnife_Data[week], king)
         king_week = All_OutKnife_Data[week][king_key]["資訊"]["week"]
         All_OutKnife_Data[week][king_key]["資訊"]["hp"] = tea_fig_get_king_hp(
-            force_week, king)
+            king_week, king)
         SignUp_List = All_OutKnife_Data[week][king_key]["報名列表"]
         over_id = All_OutKnife_Data[week][king_key]["資訊"]["header"]
         send_msg += f'{king_week}周{king_key}出了'
@@ -1786,10 +1789,10 @@ def tea_fig_list_func(msg):
     unit = unit_list[msg]
     if(msg not in ["補償清單", "出刀清單"]):
         # f'{All_OutKnife_Data[week][msg]["資訊"]["hp"]}'
-        damage_info = f'{tea_fig_get_king_hp(now["force_week"], king_index)}'
+        week_str = All_OutKnife_Data[week][msg]["資訊"]["week"]
+        damage_info = f'{tea_fig_get_king_hp(week_str, king_index)}'
         left_hp = f'{All_OutKnife_Data[week][msg]["資訊"]["hp"]}'
         header_info = All_OutKnife_Data[week][msg]["資訊"]["header"]
-        week_str = All_OutKnife_Data[week][msg]["資訊"]["week"]
         
         # remaining = 1  # int(damage_info) - tea_fig_PlusAllDamage(SignUp_List)
         # if(remaining > 0):
