@@ -24,6 +24,8 @@ _logger = logging.getLogger(__name__)
 #     """ % CONFIG_SETTING_PATH)
 intents = discord.Intents.default()  # Allow the use of custom intents
 intents.members = True
+intents.message_content = True
+intents.presences = True
 
 bot = commands.Bot(
     command_prefix=config['prefix'].split(','), case_insensitive=True, intents=intents)
@@ -40,8 +42,8 @@ bot.add_command(commands.Command(func.reload))
 """ bot.help_command.get_ending_note """
 
 
-def run():
+async def run():
     if not config['token']:
         _logger.error(f'Discord robot TOKEN not setting. Please set in {config.rcfile}')
     else:
-        bot.run(config['token'])
+        await bot.start(config['token'])

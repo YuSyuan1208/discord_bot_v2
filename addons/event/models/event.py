@@ -107,5 +107,5 @@ class event(model.Cog_Extension):
         #         if n > number:
         #             break
     
-def setup(bot):
-    bot.add_cog(event(bot))
+async def setup(bot):
+    await bot.add_cog(event(bot))

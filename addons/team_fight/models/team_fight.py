@@ -112,7 +112,7 @@ class team_fight(model.Cog_Extension):
 
     """ ----------------- 重啟清單比對 -----------------"""
 
-    @commands.command()
+    # @commands.command()
     async def _load_setting(self):
         """  """
         await super()._load_setting()
@@ -238,7 +238,7 @@ class team_fight(model.Cog_Extension):
                         dc_description = i.description
                         sys_description = All_OutKnife_Data[week_tmp][king_tmp]['資訊']['header']
                         # print(dc_description, sys_description)
-                        if(str(dc_description) != str(sys_description)) and (dc_description != discord.Embed.Empty):
+                        if(str(dc_description) != str(sys_description)) and (dc_description):
                             list_changed_content += f'```arm\n{week_tmp}周{king_tmp} 補償刀:{sys_description} -> {dc_description}\n```'
                             All_OutKnife_Data[week_tmp][king_tmp]['資訊']['header'] = dc_description
                         # hp

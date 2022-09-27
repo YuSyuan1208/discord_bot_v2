@@ -1,4 +1,4 @@
 from addons.converse.models import converse
 
-def setup(bot):
-    bot.add_cog(converse.converse(bot))
+async def setup(bot):
+    await bot.add_cog(converse.converse(bot))
