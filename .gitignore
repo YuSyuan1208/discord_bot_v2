@@ -11,3 +11,7 @@
 # 忽略特定檔案
 poetry.lock
 pyproject.toml
+
+#replit
+.replit
+/venv/*
