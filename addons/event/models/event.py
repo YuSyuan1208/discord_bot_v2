@@ -56,7 +56,7 @@ class event(model.Cog_Extension):
             mgs.append(message)
         for m in mgs:
             print(m.content)
-        await channel.delete_messages(mgs)
+        await ctx.channel.delete_messages(mgs)
 
     @commands.command()
     async def event_test(self, ctx):
