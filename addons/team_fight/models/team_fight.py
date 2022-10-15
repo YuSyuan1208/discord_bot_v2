@@ -1533,9 +1533,11 @@ class team_fight(model.Cog_Extension):
             except:
                 return 0
             # try:
-            content = event_number_insert(payload)
+            msg_objs = await self._get_message_obj(channel_id,[payload.message_id])
+            msg = msg_objs[0]
+            content = event_number_insert(payload, msg)
             if(content == 'enter'):
-                msg = number_insert_msg[payload.message_id][3]
+                # msg = number_insert_msg[payload.message_id][3]
                 week = number_insert_msg[payload.message_id][1]
                 king = number_insert_msg[payload.message_id][2]
 
@@ -1588,7 +1590,9 @@ class team_fight(model.Cog_Extension):
                     return 0
             except:
                 return 0
-            content = event_number_insert(payload)
+            msg_objs = await self._get_message_obj(channel_id,[payload.message_id])
+            msg = msg_objs[0]
+            content = event_number_insert(payload, msg)
             if(content == 'enter'):
                 pass
             elif(content):
@@ -1808,13 +1812,13 @@ def tea_fig_list_func(msg):
     elif(msg == "補償清單"):
         damage_info = ""
         header_info = ""
-        footer_info = '補償丟出去後記得使用指令刪除(๑•᎑•๑)'
+        footer_info = '補償進場需打上(*in {王} 1)出刀後(*f)會自動刪除後刪除(๑•᎑•๑)'
         embed_color = embed_color_list["補償清單"]
         set_author_name = f'{msg} {damage_info}'
     elif(msg == "出刀清單"):
         damage_info = ""
         header_info = ""
-        footer_info = '換王後會自動清除喔(๑•᎑•๑)'
+        footer_info = '出刀後(*f)會自動清除喔(๑•᎑•๑)'
         embed_color = embed_color_list["出刀清單"]
         set_author_name = f'{msg} {damage_info}'
 
@@ -1902,7 +1906,7 @@ def tea_fig_cut_out_list_del(king_str):
         if d['in_king'] == king_str:
             cut_out_SignUp_List.remove(d)
 
-def event_number_insert(payload):
+def event_number_insert(payload, msg):
     """ 按鍵數字輸入 """
     emoji_id = payload.emoji
     try:
@@ -1911,7 +1915,8 @@ def event_number_insert(payload):
         return False
     if(number_insert_msg[payload.message_id][0] != payload.user_id):
         return False
-    msg = number_insert_msg[payload.message_id][3]
+    # msg = number_insert_msg[payload.message_id][3]
+    # _logger.debug(f'msg content: {msg.content}')
     if(payload.message_id == number_insert_msg[payload.message_id][3].id):
         tmp = f'{msg.content}'
         tmp = tmp.split(':', 1)
