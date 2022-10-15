@@ -1102,19 +1102,22 @@ class team_fight(model.Cog_Extension):
                 except:
                     await ctx.send('補償清單取消失敗，跳過!')
             else:
-                used_list = [tmp['id']
-                            for tmp in All_OutKnife_Data[week_data][king_data]['報名列表']]
-                user_index = used_list.index(f'<@!{author_id}>')
-                await self.取消報名(ctx, king_data, user_index+1, week_data, author_id)
-                """ SignUp_List_tmp = All_OutKnife_Data[week_data][king_data]["報名列表"]
-                index_tmp = 0
-                for v in SignUp_List_tmp:
-                    if index_tmp < user_index:
-                        print(v['呼叫'])
-                        v['呼叫'] += 1
-                        index_tmp += 1
-                    else:
-                        break """
+                try:
+                    used_list = [tmp['id']
+                                for tmp in All_OutKnife_Data[week_data][king_data]['報名列表']]
+                    user_index = used_list.index(f'<@!{author_id}>')
+                    await self.取消報名(ctx, king_data, user_index+1, week_data, author_id)
+                    """ SignUp_List_tmp = All_OutKnife_Data[week_data][king_data]["報名列表"]
+                    index_tmp = 0
+                    for v in SignUp_List_tmp:
+                        if index_tmp < user_index:
+                            print(v['呼叫'])
+                            v['呼叫'] += 1
+                            index_tmp += 1
+                        else:
+                            break """
+                except:
+                    await ctx.send('報名清單取消失敗，跳過!')
         else:
             await ctx.send('你不在出刀清單中喔(๑•́︿•̀๑)')
             return 0
