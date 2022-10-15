@@ -1812,13 +1812,13 @@ def tea_fig_list_func(msg):
     elif(msg == "補償清單"):
         damage_info = ""
         header_info = ""
-        footer_info = '補償進場需打上(*in {王} 1)出刀後(*f)會自動刪除後刪除(๑•᎑•๑)'
+        footer_info = '補償進場出刀後會自動刪除(๑•᎑•๑)，指令: *in {王} 1'
         embed_color = embed_color_list["補償清單"]
         set_author_name = f'{msg} {damage_info}'
     elif(msg == "出刀清單"):
         damage_info = ""
         header_info = ""
-        footer_info = '出刀後(*f)會自動清除喔(๑•᎑•๑)'
+        footer_info = '出刀後會自動清除喔(๑•᎑•๑)'
         embed_color = embed_color_list["出刀清單"]
         set_author_name = f'{msg} {damage_info}'
 
