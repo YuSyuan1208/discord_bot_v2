@@ -1,10 +1,73 @@
 import logging
+from turtle import textinput
 
 from discord.ext import commands
 from addons import model
+from discord import ui,app_commands
+import discord
 
 _logger = logging.getLogger(__name__)
 
+# 573893554577866777 窩們一起學牛叫：O
+# <@&750720404213203079> @美美管理員
+#
+# 727170387091259393 功德無量
+# 734391146910056478 @TEST
+MY_GUILD = discord.Object(id=727170387091259393)  # replace with your guild id
+
+class Select(ui.Select):
+    def __init__(self, options):
+
+        # placeholder: Will be shown when no option is chosen
+        # custom_id: The id of the select menu
+        # options: The dropdown options which can be chosen
+        # max_values: Indicates that max. 2 options can be picked
+        super().__init__(placeholder="Select", custom_id="test", options=options, max_values=2)
+
+    # This function is called when the user has chosen an option
+    async def callback(self, interaction: discord.Interaction):
+        # With the interaction parameter, you can send a response message.
+        # With self.values you get a list of the user's selected options.
+        print(self.values)
+        await interaction.response.send_message(f"Done!", ephemeral=True)
+
+class ViewButton(ui.View):
+
+    # label: The label of the button which is displayed
+    # style: The background color of the button
+    @ui.button(label="Role Menu", style=discord.ButtonStyle.blurple)
+    async def role_menu_btn(self, interaction: discord.Interaction, button_obj: ui.Button):
+        # This function is called when a user clicks on the button
+
+        # get the roles
+        # test1_role = interaction.guild.get_role(1007237710295081020)
+        # test2_role = interaction.guild.get_role(1007237773230620728)
+
+        # check if user has the role or not
+        # df1 = True if test1_role in interaction.user.roles else False
+        # df2 = True if test2_role in interaction.user.roles else False
+        df1 = True 
+        df2 = True 
+        options = [
+            discord.SelectOption(label="Test 1", value="Test 1", default=df1),
+            discord.SelectOption(label="Test 2", value="Test 2", default=df2)
+        ]
+
+        # create ui.Select instance and add it to a new view
+        select = Select(options=options)
+        view_select = ui.View()
+        view_select.add_item(select)
+
+        # edit the message with the new view
+        await interaction.response.edit_message(content="Choose an option", view=view_select)
+        
+class Questionnaire(ui.Modal, title='Questionnaire Response'):
+    name = ui.TextInput(label='Name')
+    answer = ui.TextInput(label='Answer', style=discord.TextStyle.paragraph)
+
+    async def on_submit(self, interaction: discord.Interaction):
+        await interaction.response.send_message(f'Thanks for your response, {self.name}!', ephemeral=True)
+            
 
 class event(model.Cog_Extension):
 
@@ -106,6 +169,44 @@ class event(model.Cog_Extension):
         #         n += 1
         #         if n > number:
         #             break
+    
+    @commands.command()
+    async def button(self, ctx):
+        await ctx.send(
+            'test', view=ViewButton()
+        )
+    
+    @commands.command()
+    async def input(self, ctx):
+        input = ui.TextInput(label='test')
+        view_input = ui.View()
+        view_input.add_item(input)
+        
+        await ctx.send(
+            'test', view=view_input
+        )
+
+    @commands.hybrid_command()
+    async def input2(self, ctx):
+        await ctx.response.send_modal(Questionnaire())
+        
+    @app_commands.command(name="test4")
+    async def test4(self, ctx):
+        await ctx.send("This is a hybrid command!")
+        
+    @app_commands.command(name="command-1")
+    async def my_command(self, interaction: discord.Interaction) -> None:
+        """ /command-1 """
+        await interaction.response.send_message("Hello from command 1!", ephemeral=True)
+        
+    @commands.hybrid_command(name="ping")
+    async def ping_command(self, ctx: commands.Context) -> None:
+        """
+        This command is actually used as an app command AND a message command.
+        This means it is invoked with `?ping` and `/ping` (once synced, of course).
+        """
+
+        await ctx.send("Hello!")
     
 async def setup(bot):
     await bot.add_cog(event(bot))
