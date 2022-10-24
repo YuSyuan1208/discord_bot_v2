@@ -15,8 +15,10 @@ test
 ```
 """
 
+from typing import Optional
 import discord
 from discord.ext import commands
+from discord import app_commands
 import random
 import json
 import array
@@ -63,6 +65,8 @@ sign_up_emoji = '📄'
 cancel_emoji = '🔄'
 overflow_emoji = '🔂'
 overflow_cancel_emoji = '🆖'
+
+no_access_message = '你沒有權限喔(๑•́︿•̀๑)，需要相關權限請<@!312939009879834624>'
 
 # *刪除列表 / *Clear
 
@@ -529,8 +533,9 @@ class team_fight(model.Cog_Extension):
                     send_msg = f'<@!{author_id}>{king_week}周{tmp[0]}報名成功٩( >ω< )وو, 目前人數: {l+1} {delete_msg}'
                     await ctx.send(send_msg, delete_after=delete_after)
                     if(run_out_before_look):
-                        channel2 = self.bot.get_channel(run_out_before_look)
-                        await channel2.send(send_msg)
+                        if (channel_id != run_out_before_look):
+                            channel2 = self.bot.get_channel(run_out_before_look)
+                            await channel2.send(send_msg)
 
                 if(week <= now['周'] + 2):
                     # print('meme_edit')
@@ -557,8 +562,8 @@ class team_fight(model.Cog_Extension):
         else:
             channel_id = ctx.channel.id
             author_id = ctx.author.id
-            delete_after = None
-            delete_msg = ''
+            delete_after = 5
+            delete_msg = '(5秒後清除)'
 
         ''' 權限 '''
         if (admin_check(author_id, self.bot, self) != True):
@@ -1332,9 +1337,12 @@ class team_fight(model.Cog_Extension):
                       aliases=['ch'],
                       )
     async def 血量變更(self, ctx, hp, king):
+        channel_id = ctx.channel.id
         author_id = ctx.author.id
         if(admin_check(author_id, self.bot, self) != True):
-            return 0
+            if(limit_enable):
+                if (channel_id not in [tea_fig_channel]):
+                   return 0
         week = now["周"]
         king = int(king)
         king_key = tea_fig_KingIndexToKey(All_OutKnife_Data[1], king)
@@ -1479,7 +1487,9 @@ class team_fight(model.Cog_Extension):
                     return 0
                 else:
                     # await channel.send(f'<@!{user_id}>你準備報名{force_week}周{king} (3秒後清除)', delete_after=3)
-                    await self.enter_to_king_from_emoji(channel, user_id, week, king)
+                    # await self.enter_to_king_from_emoji(channel, user_id, week, king)
+                    await self.報名(channel, king, '1', week, user_id)
+                    
                 """ except:
                     print('emoji報名失敗') """
             if(str(emoji_id) == cancel_emoji):
@@ -1718,6 +1728,87 @@ class team_fight(model.Cog_Extension):
         """ except:
             await ctx.send("```arm\n欲查詢列表請標注特定王(ฅฅ*)\n``` ex. \*列表 all ,\*列表 ?王")
             print(sys.exc_info()[0]) """
+            
+    # -------------------------------------------------------------
+    # hybrid_command
+    @commands.hybrid_command(name='meme_e報名')
+    @app_commands.rename(king='清單', damage='傷害')
+    @app_commands.describe(
+        king='輸入要報名的王: 1~5',
+        damage='預測模擬傷害，可不輸入，預設0')
+    async def hybrid_enter_king(self, ctx, king:int, damage:int=0):
+        """ 報名戰對戰1~5王 """
+        if king >= 1 and king <= 5:
+            await self.報名(ctx, king, damage)
+        else:
+            await ctx.send(f'請輸入1~5，報名補償請使用 /meme_e報名補償')
+
+    @commands.hybrid_command(name='meme_e報名補償')
+    @app_commands.rename(sec='補償秒數')
+    @app_commands.describe(
+        sec='補償秒數，單位秒(s)')
+    async def hybrid_enter_overflow(self, ctx, sec:int):
+        """ 報名補償清單 """
+        await self.報名(ctx, 6, sec)
+        
+    @commands.hybrid_command(name='meme_in進刀')
+    @app_commands.rename(king='王',overflag='補償註記')
+    @app_commands.describe(
+        king='要進刀的王: 1~5',
+        overflag='選擇True，代表該刀為補償刀(需先報名補償清單)')
+    async def hybrid_in_king(self, ctx, king:int, overflag:bool=False):
+        """ 戰對戰進刀 """
+        if overflag:
+            await self.進刀(ctx, king, 1)
+        else:
+            await self.進刀(ctx, king)
+    
+    @commands.hybrid_command(name='meme_re回報')
+    @app_commands.rename(damage='傷害', remark='備註')
+    @app_commands.describe(
+        damage='請輸入出刀的傷害，以萬(w)為單位',
+        remark='備忘錄，隨意輸入'
+        )
+    async def hybrid_report(self, ctx, damage:int, remark:str=''):
+        """ 回報戰對戰出刀傷害，將同步更新出刀清單 """
+        await self.回報(ctx, damage, remark)
+        
+    @commands.hybrid_command(name='meme_f出刀')
+    # @app_commands.rename(member='人員')
+    # @app_commands.describe(
+    #     member='幫特定人員出刀(管理員專用)'
+    #     )
+    async def hybrid_finsh(self, ctx):
+        """ 出刀，會自動清除出刀清單和報名清單 """
+        await self.下王(ctx)
+    
+    @commands.hybrid_command(name='meme_tree掛樹')
+    async def hybrid_tree(self, ctx, member: Optional[discord.Member] = None):
+        """ 掛樹，當周王死掉後會tag掛樹人員 """
+        if member:
+            await self.下王(ctx, member)
+        else:
+            await self.下王(ctx)
+    
+    @commands.hybrid_command(name='meme_cw切換周')
+    @app_commands.rename(week='周', king='王')
+    @app_commands.describe(
+        week='輸入要切換到的週數',
+        king='要變更的清單王: 1~5'
+        )
+    async def hybrid_change_week(self, ctx, week:int, king:int):
+        """ 變更清單王的週數 """
+        await self.切換周(ctx, week, king)
+    
+    @commands.hybrid_command(name='meme_ch血量變更')
+    @app_commands.rename(hp='血量', king='王')
+    @app_commands.describe(
+        hp='輸入要變更的當前血量',
+        king='要變更的清單王: 1~5'
+        )
+    async def hybrid_change_hp(self, ctx, hp:int, king:int):
+        """ 變更清單王的當前血量 """
+        await self.血量變更(ctx, hp, king)
 
 
 def tea_fig_list_check(matrix, author_str):

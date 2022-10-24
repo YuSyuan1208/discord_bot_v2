@@ -27,19 +27,16 @@ class dc_main_func():
         _logger.info(self.bot.user.id)
         _logger.info('------')
 
-    @commands.command()
     async def load(self, ctx, module):
         _logger.debug(f'load module: {module}')
         if await self._module_action(module, 'load'):
             await ctx.send(f'Loaded {module}')
 
-    @commands.command()
     async def unload(self, ctx, module):
         _logger.debug(f'unload module: {module}')
         if await self._module_action(module, 'unload'):
             await ctx.send(f'Unloaded {module}')
 
-    @commands.command()
     async def reload(self, ctx, module):
         _logger.debug(f'reload module: {module}')
         if await self._module_action(module, 'reload'):
@@ -54,18 +51,18 @@ class dc_main_func():
             flag = False
             if type == 'load':
                 if installable and not installed:
-                    self.bot.load_extension(f'{ADDONS_PATH}.{module}')
+                    await self.bot.load_extension(f'{ADDONS_PATH}.{module}')
                     ModuleManage.module_load(module)
                     await self.bot.get_cog(module).on_ready()
                     flag = True
             elif type == 'unload':
                 if installed:
-                    self.bot.unload_extension(f'{ADDONS_PATH}.{module}')
+                    await self.bot.unload_extension(f'{ADDONS_PATH}.{module}')
                     ModuleManage.module_unload(module)
                     flag = True
             elif type == 'reload':
                 if installed and installable:
-                    self.bot.reload_extension(f'{ADDONS_PATH}.{module}')
+                    await self.bot.reload_extension(f'{ADDONS_PATH}.{module}')
                     ModuleManage.module_reload(module)
                     await self.bot.get_cog(module).on_ready()
                     flag = True

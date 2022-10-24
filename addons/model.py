@@ -3,6 +3,8 @@ import logging
 from os.path import join as opj
 from tools.command import CommandObjectImport
 from discord.ext import commands
+from discord import app_commands
+import discord
 from tools import data
 from modules.loading import addons_list
 
@@ -12,7 +14,12 @@ MODEL_DATA_PATH = 'data'
 MODEL_SETTING_FILE = 'setting.json'
 MODEL_SETTING_KEYS = ['msg_id', 'channel_id']
 
-
+# 573893554577866777 窩們一起學牛叫：O
+# <@&750720404213203079> @美美管理員
+#
+# 727170387091259393 功德無量
+# 734391146910056478 @TEST
+MY_GUILD = discord.Object(id=727170387091259393)  # replace with your guild id
 class Cog_Extension(commands.Cog):
 
     _name = None
@@ -138,7 +145,9 @@ class Cog_Extension(commands.Cog):
                 obj.msg_obj = msg_obj
                 obj.msg_content = setting['content']
                 obj.obj_type = self._name
-                self.bot.add_command(commands.Command(obj.add_cmd, name=name))
+                group = app_commands.Group(name=self._name, description="description")
+                # self.bot.tree.add_command(commands.hybrid_command(obj.add_cmd))
+                self.bot.tree.add_command(group.command(obj.add_cmd), guild=MY_GUILD)
             _logger.info(self._name + ' cmds complete.')
             return True
         else:

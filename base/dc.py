@@ -30,12 +30,22 @@ intents.presences = True
 bot = commands.Bot(
     command_prefix=config['prefix'].split(','), case_insensitive=True, intents=intents)
 
+
+def command_method(method, name=False):
+    if not name:
+        name = method.__name__
+    @commands.command(name=name)
+    async def a(ctx, module):
+        await method(ctx, module)
+    return a
+
+
 # base robot command
 func = dc_main_func(bot)
 bot.add_listener(func.on_ready)
-bot.add_command(commands.Command(func.load))
-bot.add_command(commands.Command(func.unload))
-bot.add_command(commands.Command(func.reload))
+bot.add_command(command_method(func.load, 'load'))
+bot.add_command(command_method(func.unload, 'unload'))
+bot.add_command(command_method(func.reload, 'reload'))
 
 
 # help ending note
